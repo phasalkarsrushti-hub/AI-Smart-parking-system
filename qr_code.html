@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>🚗 AI Smart Parking - Secure QR Code</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Poppins',sans-serif;
+background:#050816;
+overflow-x:hidden;
+color:white;
+min-height:100vh;
+}
+
+.background{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:linear-gradient(
+135deg,
+#020617,
+#071a2d,
+#0f172a,
+#081229
+);
+background-size:400% 400%;
+animation:bgAnimation 12s ease infinite;
+z-index:-100;
+}
+
+@keyframes bgAnimation{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+.circle{
+position:absolute;
+border-radius:50%;
+filter:blur(40px);
+opacity:.45;
+animation:floatCircle 12s infinite alternate;
+}
+
+.c1{
+width:260px;
+height:260px;
+background:#00e5ff;
+top:5%;
+left:5%;
+}
+
+.c2{
+width:220px;
+height:220px;
+background:#7c4dff;
+top:20%;
+right:10%;
+animation-delay:3s;
+}
+
+.c3{
+width:200px;
+height:200px;
+background:#00ff99;
+bottom:10%;
+left:40%;
+animation-delay:6s;
+}
+
+@keyframes floatCircle{
+from{transform:translate(0,0);}
+to{transform:translate(80px,-60px);}
+}
+
+.particle{
+position:fixed;
+width:8px;
+height:8px;
+background:white;
+border-radius:50%;
+opacity:.7;
+animation:particleMove 12s linear infinite;
+z-index:-2;
+}
+
+.p1{left:10%;animation-delay:0s;}
+.p2{left:30%;animation-delay:2s;}
+.p3{left:50%;animation-delay:4s;}
+.p4{left:70%;animation-delay:6s;}
+.p5{left:90%;animation-delay:8s;}
+
+@keyframes particleMove{
+0%{
+transform:translateY(100vh);
+opacity:0;
+}
+20%{
+opacity:1;
+}
+100%{
+transform:translateY(-120vh);
+opacity:0;
+}
+}
+
+.car{
+position:fixed;
+bottom:25px;
+font-size:55px;
+z-index:-1;
+animation:carMove 14s linear infinite;
+}
+
+.car2{
+bottom:85px;
+font-size:48px;
+animation-delay:5s;
+animation-duration:18s;
+}
+
+.car3{
+bottom:145px;
+font-size:42px;
+animation-delay:8s;
+animation-duration:20s;
+}
+
+@keyframes carMove{
+from{left:-120px;}
+to{left:110%;}
+}
+
+.container{
+margin-top:40px;
+margin-bottom:40px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="background">
+<div class="circle c1"></div>
+<div class="circle c2"></div>
+<div class="circle c3"></div>
+</div>
+
+<div class="particle p1"></div>
+<div class="particle p2"></div>
+<div class="particle p3"></div>
+<div class="particle p4"></div>
+<div class="particle p5"></div>
+
+<div class="car">🚗</div>
+<div class="car car2">🚙</div>
+<div class="car car3">🚕</div>
+
+<div class="container">
+
+<div class="row justify-content-center">
+
+<div class="col-lg-10">
+
+<div class="card qr-card">
+
+<div class="card-body">
+
+<h2 class="text-center text-info mb-3">
+🚗 AI Smart Parking Secure QR Pass
+</h2>
+
+<p class="text-center text-light">
+Scan this QR code at the smart parking gate for secure vehicle entry.
+</p>
+
+<hr class="text-light">
+
+<div class="row">
+
+<!-- QR CODE -->
+
+<div class="col-md-5 text-center">
+
+<div class="qr-box">
+
+<div class="scanner-line"></div>
+
+<img src="{{ url_for('static', filename='qrcodes/' + filename) }}"
+alt="QR Code"
+class="img-fluid qr-image">
+
+</div>
+
+<h3 class="mt-4">
+🚘 {{ vehicle_number if vehicle_number else "Vehicle" }}
+</h3>
+
+<span class="badge bg-success p-2">
+✅ AI Verified
+</span>
+
+</div>
+
+<!-- VEHICLE INFORMATION -->
+
+<div class="col-md-7">
+
+<h3 class="text-info">
+📋 Vehicle Information
+</h3>
+
+<table class="table table-dark table-bordered align-middle">
+    <tr>
+    <th>🚗 Vehicle Number</th>
+    <td>{{ vehicle_number }}</td>
+</tr>
+
+<tr>
+    <th>🅿 Parking Slot</th>
+    <td>{{ slot_number }}</td>
+</tr>
+
+<tr>
+    <th>👤 Owner</th>
+    <td>{{ owner }}</td>
+</tr>
+
+<tr>
+    <th>🕒 Entry Time</th>
+    <td>{{ entry_time }}</td>
+</tr>
+
+<tr>
+    <th>🤖 AI Security</th>
+    <td>
+        <span class="badge bg-success">
+            Verified
+        </span>
+    </td>
+</tr>
+
+<tr>
+    <th>🔐 Gate Access</th>
+    <td>
+        <span class="badge bg-warning text-dark">
+            Authorized
+        </span>
+    </td>
+</tr>
+
+<tr>
+    <th>Status</th>
+    <td>
+
+        {% if status=="Occupied" %}
+
+        <span class="badge bg-danger">
+            🚗 {{ status }}
+        </span>
+
+        {% else %}
+
+        <span class="badge bg-success">
+            ✅ {{ status }}
+        </span>
+
+        {% endif %}
+
+    </td>
+</tr>
+
+</table>
+
+</div>
+
+</div>
+
+<hr class="text-light mt-4">
+
+<div class="text-center mt-4">
+
+<a href="{{ url_for('dashboard') }}"
+class="btn btn-primary m-2 action-btn">
+
+🏠 Dashboard
+
+</a>
+
+<a href="{{ url_for('parking_map') }}"
+class="btn btn-dark m-2 action-btn">
+
+🗺 Parking Map
+
+</a>
+
+<a href="{{ url_for('find_vehicle') }}"
+class="btn btn-success m-2 action-btn">
+
+📍 Find Vehicle
+
+</a>
+
+<a href="{{ url_for('static', filename='qrcodes/' + filename) }}"
+download
+class="btn btn-info m-2 action-btn">
+
+⬇ Download QR
+
+</a>
+
+<button
+onclick="window.print()"
+class="btn btn-warning m-2 action-btn">
+
+🖨 Print QR
+
+</button>
+
+</div>
+<!-- ===================================
+     AI SECURITY STATUS
+=================================== -->
+
+<div class="row mt-5">
+
+    <div class="col-md-6">
+
+        <div class="status-card">
+
+            <h4>🤖 AI Verification</h4>
+
+            <h2 class="text-success">PASSED</h2>
+
+            <p>Your vehicle has been successfully verified.</p>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-6">
+
+        <div class="status-card">
+
+            <h4>🔐 Security</h4>
+
+            <h2 class="text-warning">HIGH</h2>
+
+            <p>Vehicle access is protected by AI.</p>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ===================================
+     FOOTER
+=================================== -->
+
+<hr class="text-light mt-5">
+
+<div class="text-center mb-3">
+
+    <h5>🚗 AI Smart Parking Management System</h5>
+
+    <p>
+        Powered by Python • Flask • SQLite • AI
+    </p>
+
+</div>
+
+</div>
+</div>
+</div>
+<style>
+
+/* ===================================
+   QR CARD
+=================================== */
+
+.qr-card{
+
+background:rgba(255,255,255,.10);
+
+backdrop-filter:blur(18px);
+
+border-radius:25px;
+
+border:1px solid rgba(255,255,255,.2);
+
+box-shadow:0 0 30px rgba(0,255,255,.5);
+
+color:white;
+
+}
+
+/* ===================================
+   QR BOX
+=================================== */
+
+.qr-box{
+
+position:relative;
+
+display:inline-block;
+
+padding:15px;
+
+background:white;
+
+border-radius:20px;
+
+overflow:hidden;
+
+box-shadow:0 0 25px cyan;
+
+}
+
+.qr-image{
+
+width:260px;
+
+height:260px;
+
+border-radius:10px;
+
+}
+
+/* ===================================
+   QR SCANNER
+=================================== */
+
+.scanner-line{
+
+position:absolute;
+
+left:0;
+
+width:100%;
+
+height:5px;
+
+background:cyan;
+
+box-shadow:0 0 15px cyan;
+
+animation:scanQR 3s linear infinite;
+
+}
+
+@keyframes scanQR{
+
+0%{
+
+top:0;
+
+}
+
+100%{
+
+top:100%;
+
+}
+
+}
+
+/* ===================================
+   STATUS CARD
+=================================== */
+
+.status-card{
+
+background:rgba(255,255,255,.10);
+
+backdrop-filter:blur(12px);
+
+padding:20px;
+
+border-radius:20px;
+
+text-align:center;
+
+box-shadow:0 0 20px rgba(0,255,255,.4);
+
+margin-top:20px;
+
+}
+
+/* ===================================
+   ACTION BUTTON
+=================================== */
+
+.action-btn{
+
+font-weight:bold;
+
+border-radius:30px;
+
+padding:12px 25px;
+
+transition:.4s;
+
+}
+
+.action-btn:hover{
+
+transform:translateY(-4px) scale(1.05);
+
+box-shadow:0 0 20px cyan;
+
+}
+
+</style>
+
+<!-- ===================================
+     AI SECURITY SHIELD
+=================================== -->
+
+<div class="security-shield">
+
+🛡️
+
+</div>
+
+<!-- ===================================
+     RADAR EFFECT
+=================================== -->
+
+<div class="radar radar1"></div>
+
+<div class="radar radar2"></div>
+
+<div class="radar radar3"></div>
+
+<style>
+    /* ===================================
+   SECURITY SHIELD
+=================================== */
+
+.security-shield{
+
+    position:fixed;
+
+    top:30px;
+
+    right:30px;
+
+    font-size:70px;
+
+    animation:shieldPulse 2.5s infinite;
+
+    z-index:20;
+
+}
+
+@keyframes shieldPulse{
+
+    0%{
+
+        transform:scale(1);
+
+        filter:drop-shadow(0 0 10px cyan);
+
+    }
+
+    50%{
+
+        transform:scale(1.15);
+
+        filter:drop-shadow(0 0 35px #00ffff);
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+        filter:drop-shadow(0 0 10px cyan);
+
+    }
+
+}
+
+/* ===================================
+   RADAR ANIMATION
+=================================== */
+
+.radar{
+
+    position:fixed;
+
+    top:90px;
+
+    right:70px;
+
+    border:2px solid rgba(0,255,255,.5);
+
+    border-radius:50%;
+
+    animation:radarWave 3s linear infinite;
+
+    z-index:10;
+
+}
+
+.radar1{
+
+    width:80px;
+
+    height:80px;
+
+}
+
+.radar2{
+
+    width:130px;
+
+    height:130px;
+
+    animation-delay:1s;
+
+}
+
+.radar3{
+
+    width:180px;
+
+    height:180px;
+
+    animation-delay:2s;
+
+}
+
+@keyframes radarWave{
+
+    0%{
+
+        transform:scale(.4);
+
+        opacity:1;
+
+    }
+
+    100%{
+
+        transform:scale(1.5);
+
+        opacity:0;
+
+    }
+
+}
+
+/* ===================================
+   QR IMAGE GLOW
+=================================== */
+
+.qr-image{
+
+    animation:qrGlow 2s infinite alternate;
+
+}
+
+@keyframes qrGlow{
+
+    from{
+
+        box-shadow:0 0 15px cyan;
+
+    }
+
+    to{
+
+        box-shadow:0 0 35px #00ffff;
+
+    }
+
+}
+
+/* ===================================
+   TABLE STYLE
+=================================== */
+
+.table{
+
+    border-radius:15px;
+
+    overflow:hidden;
+
+}
+
+.table td,
+.table th{
+
+    vertical-align:middle;
+
+}
+/* ===================================
+   RESPONSIVE DESIGN
+=================================== */
+
+@media (max-width:992px){
+
+    .qr-image{
+
+        width:220px;
+
+        height:220px;
+
+    }
+
+}
+
+@media (max-width:768px){
+
+    .security-shield{
+
+        font-size:50px;
+
+        top:20px;
+
+        right:20px;
+
+    }
+
+    .qr-image{
+
+        width:190px;
+
+        height:190px;
+
+    }
+
+    .action-btn{
+
+        width:100%;
+
+        margin-top:10px;
+
+    }
+
+    h2{
+
+        font-size:28px;
+
+    }
+
+    h3{
+
+        font-size:22px;
+
+    }
+
+}
+
+@media (max-width:576px){
+
+    .container{
+
+        margin-top:20px;
+
+    }
+
+    .qr-image{
+
+        width:170px;
+
+        height:170px;
+
+    }
+
+    .status-card{
+
+        margin-bottom:20px;
+
+    }
+
+}
+
+</style>
+
+</body>
+
+</html>

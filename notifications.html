@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Smart Parking - Notifications</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+/* =====================================
+      AI SMART PARKING
+      NOTIFICATIONS PAGE
+===================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Segoe UI',sans-serif;
+    background:#050816;
+    overflow-x:hidden;
+    color:white;
+    min-height:100vh;
+}
+
+/* =====================================
+      ANIMATED BACKGROUND
+===================================== */
+
+.background{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:linear-gradient(
+        -45deg,
+        #020617,
+        #071a2d,
+        #0f172a,
+        #001f3f,
+        #020617
+    );
+    background-size:400% 400%;
+    animation:gradientMove 15s ease infinite;
+    z-index:-100;
+}
+
+@keyframes gradientMove{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+/* =====================================
+      GLOWING CIRCLES
+===================================== */
+
+.circle{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(45px);
+    opacity:.45;
+    animation:circleMove 10s infinite alternate;
+}
+
+.c1{
+    width:280px;
+    height:280px;
+    background:#00e5ff;
+    top:5%;
+    left:5%;
+}
+
+.c2{
+    width:220px;
+    height:220px;
+    background:#7c4dff;
+    top:15%;
+    right:8%;
+    animation-delay:3s;
+}
+
+.c3{
+    width:240px;
+    height:240px;
+    background:#00ff99;
+    bottom:5%;
+    left:35%;
+    animation-delay:6s;
+}
+
+@keyframes circleMove{
+from{transform:translate(0,0);}
+to{transform:translate(80px,-70px);}
+}
+
+/* =====================================
+      FLOATING PARTICLES
+===================================== */
+
+.particle{
+    position:fixed;
+    width:8px;
+    height:8px;
+    background:white;
+    border-radius:50%;
+    opacity:.8;
+    animation:particleMove 12s linear infinite;
+    z-index:-2;
+}
+
+.p1{left:10%;animation-delay:0s;}
+.p2{left:25%;animation-delay:2s;}
+.p3{left:45%;animation-delay:4s;}
+.p4{left:70%;animation-delay:6s;}
+.p5{left:90%;animation-delay:8s;}
+
+@keyframes particleMove{
+0%{
+transform:translateY(100vh);
+opacity:0;
+}
+20%{
+opacity:1;
+}
+100%{
+transform:translateY(-120vh);
+opacity:0;
+}
+}
+
+/* =====================================
+      MOVING CARS
+===================================== */
+
+.car{
+    position:fixed;
+    bottom:25px;
+    font-size:55px;
+    animation:carMove 14s linear infinite;
+    z-index:-1;
+}
+
+.car2{
+    bottom:90px;
+    font-size:45px;
+    animation-delay:5s;
+    animation-duration:18s;
+}
+
+.car3{
+    bottom:155px;
+    font-size:50px;
+    animation-delay:9s;
+    animation-duration:20s;
+}
+
+@keyframes carMove{
+from{left:-120px;}
+to{left:110%;}
+}
+
+/* =====================================
+      MAIN CONTAINER
+===================================== */
+
+.container{
+    margin-top:40px;
+    margin-bottom:40px;
+}
+
+/* =====================================
+      GLASS CARD
+===================================== */
+
+.main-card{
+    background:rgba(255,255,255,.10);
+    backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,.2);
+    border-radius:25px;
+    padding:30px;
+    box-shadow:0 0 30px rgba(0,255,255,.4);
+}
+
+/* =====================================
+      PAGE TITLE
+===================================== */
+
+.title{
+    text-align:center;
+    font-size:38px;
+    font-weight:bold;
+    color:#00ffff;
+    text-shadow:
+    0 0 10px cyan,
+    0 0 30px cyan;
+}
+
+.subtitle{
+    text-align:center;
+    color:#d1d5db;
+    margin-top:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- Animated Background -->
+
+<div class="background">
+    <div class="circle c1"></div>
+    <div class="circle c2"></div>
+    <div class="circle c3"></div>
+</div>
+
+<!-- Floating Particles -->
+
+<div class="particle p1"></div>
+<div class="particle p2"></div>
+<div class="particle p3"></div>
+<div class="particle p4"></div>
+<div class="particle p5"></div>
+
+<!-- Moving Cars -->
+
+<div class="car">🚗</div>
+<div class="car car2">🚙</div>
+<div class="car car3">🚕</div>
+
+<!-- Main Container -->
+
+<div class="container">
+<div class="main-card">
+
+<h1 class="title">
+🔔 AI Notification Center
+</h1>
+
+<p class="subtitle">
+Real-Time Smart Parking Alerts & Notifications
+</p>
+
+<hr class="text-light">
+<!-- =====================================
+      AI STATUS CARDS
+===================================== -->
+
+<div class="row mt-4">
+
+    <!-- AI SYSTEM -->
+    <div class="col-md-4">
+
+        <div class="card bg-success text-white shadow-lg border-0 rounded-4">
+
+            <div class="card-body text-center">
+
+                <h2>🤖</h2>
+
+                <h5>AI System</h5>
+
+                <h4>ACTIVE</h4>
+
+                <p>24/7 Monitoring</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- REGISTERED VEHICLES -->
+    <div class="col-md-4">
+
+        <div class="card bg-warning text-dark shadow-lg border-0 rounded-4">
+
+            <div class="card-body text-center">
+
+                <h2>🚗</h2>
+
+                <h5>Vehicles</h5>
+
+                <h4>{{ vehicles|length if vehicles else 0 }}</h4>
+
+                <p>Registered Vehicles</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- SECURITY -->
+    <div class="col-md-4">
+
+        <div class="card bg-danger text-white shadow-lg border-0 rounded-4">
+
+            <div class="card-body text-center">
+
+                <h2>🛡️</h2>
+
+                <h5>Security</h5>
+
+                <h4>HIGH</h4>
+
+                <p>Protected by AI</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<hr class="text-light mt-5">
+
+<!-- =====================================
+      LATEST NOTIFICATIONS
+===================================== -->
+
+<h2 class="text-info text-center mb-4">
+
+    🔔 Latest Notifications
+
+</h2>
+
+{% if notifications %}
+
+    {% for notification in notifications %}
+
+    <div class="card mb-4 border-0 shadow-lg rounded-4">
+
+        <div class="card-body">
+
+            <div class="row align-items-center">
+
+                <div class="col-md-1 text-center">
+
+                    <h1>🔔</h1>
+
+                </div>
+
+                <div class="col-md-8">
+
+                    <h4 class="text-primary">
+
+                        {{ notification.title }}
+
+                    </h4>
+
+                    <p class="mb-1">
+
+                        {{ notification.message }}
+
+                    </p>
+
+                    <small class="text-muted">
+
+                        🕒 {{ notification.created_at }}
+
+                    </small>
+
+                </div>
+
+                <div class="col-md-3 text-center">
+
+                    <span class="badge bg-success p-3">
+
+                        New
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+{% else %}
+
+<div class="alert alert-info text-center">
+
+    <h4>No Notifications Available</h4>
+
+    <p>You don't have any new notifications.</p>
+
+</div>
+
+{% endif %}
+
+<hr class="text-light mt-5">
+
+<h2 class="text-danger text-center mb-4">
+
+    🚨 Theft Alerts
+
+</h2>
+{% if theft_alerts %}
+
+    {% for alert in theft_alerts %}
+
+    <div class="card mb-4 border-danger shadow-lg rounded-4">
+
+        <div class="card-body">
+
+            <div class="row align-items-center">
+
+                <div class="col-md-1 text-center">
+
+                    <h1>🚨</h1>
+
+                </div>
+
+                <div class="col-md-8">
+
+                    <h4 class="text-danger">
+
+                        {{ alert.vehicle_number }}
+
+                    </h4>
+
+                    <p>
+
+                        {{ alert.alert_message }}
+
+                    </p>
+
+                    <small>
+
+                        🅿 Slot : {{ alert.slot_number }}
+
+                    </small>
+
+                    <br>
+
+                    <small>
+
+                        🕒 {{ alert.alert_time }}
+
+                    </small>
+
+                </div>
+
+                <div class="col-md-3 text-center">
+
+                    <span class="badge bg-danger">
+
+                        {{ alert.status }}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+{% else %}
+
+<div class="alert alert-success text-center">
+
+    <h4>✅ No Theft Alerts</h4>
+
+    <p>All parked vehicles are safe.</p>
+
+</div>
+
+{% endif %}
+
+<!-- =====================================
+      QUICK ACTION BUTTONS
+===================================== -->
+
+<hr class="text-light mt-5">
+
+<h2 class="text-center text-info mb-4">
+
+    ⚡ Quick Actions
+
+</h2>
+
+<div class="text-center">
+
+<a href="{{ url_for('dashboard') }}"
+class="btn btn-primary btn-lg m-2 action-btn">
+
+🏠 Dashboard
+
+</a>
+
+<a href="{{ url_for('book_slot') }}"
+class="btn btn-success btn-lg m-2 action-btn">
+
+🅿 Book Slot
+
+</a>
+
+<a href="{{ url_for('parking_map') }}"
+class="btn btn-dark btn-lg m-2 action-btn">
+
+🗺 Parking Map
+
+</a>
+
+<a href="{{ url_for('find_vehicle') }}"
+class="btn btn-warning btn-lg m-2 action-btn">
+
+📍 Find Vehicle
+
+</a>
+
+<button onclick="location.reload()"
+class="btn btn-info btn-lg m-2 action-btn">
+
+🔄 Refresh
+
+</button>
+
+</div>
+
+<!-- =====================================
+      SYSTEM INFORMATION
+===================================== -->
+
+<div class="row mt-5">
+
+    <!-- AI ENGINE -->
+    <div class="col-md-6">
+
+        <div class="card bg-dark text-white border-info shadow-lg rounded-4">
+
+            <div class="card-body text-center">
+
+                <h1>🤖</h1>
+
+                <h4>AI Engine</h4>
+
+                <p>Running Successfully</p>
+
+                <span class="badge bg-success">
+
+                    ONLINE
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- SECURITY -->
+    <div class="col-md-6">
+
+        <div class="card bg-dark text-white border-danger shadow-lg rounded-4">
+
+            <div class="card-body text-center">
+
+                <h1>🔒</h1>
+
+                <h4>Security Level</h4>
+
+                <p>High Protection Enabled</p>
+
+                <span class="badge bg-danger">
+
+                    SECURE
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =====================================
+      FOOTER
+===================================== -->
+
+<hr class="text-light mt-5">
+<!-- =====================================
+      FOOTER
+===================================== -->
+
+<div class="text-center mt-4 mb-3">
+
+    <h5 class="text-info">
+        🚗 AI Smart Parking Management System
+    </h5>
+
+    <p class="text-light">
+        Powered by Python • Flask • SQLite • Bootstrap • AI
+    </p>
+
+    <p class="text-secondary">
+        Real-Time Vehicle Monitoring & Smart Notification System
+    </p>
+
+</div>
+
+</div>
+</div>
+
+<!-- =====================================
+      BUTTON ANIMATION
+===================================== -->
+
+<style>
+
+.action-btn{
+    padding:12px 28px;
+    border-radius:30px;
+    font-weight:bold;
+    transition:0.4s;
+}
+
+.action-btn:hover{
+    transform:translateY(-5px) scale(1.06);
+    box-shadow:0 0 25px cyan;
+}
+
+.card{
+    transition:0.4s;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 0 30px rgba(0,255,255,0.5);
+}
+
+.badge{
+    font-size:15px;
+    padding:10px 15px;
+}
+
+</style>
+
+<!-- =====================================
+     FLOATING AI BELL
+===================================== -->
+
+<div class="notification-bell">
+    🔔
+</div>
+
+<!-- =====================================
+     RADAR EFFECT
+===================================== -->
+
+<div class="radar radar1"></div>
+<div class="radar radar2"></div>
+<div class="radar radar3"></div>
+
+<style>
+
+/* Floating Notification Bell */
+
+.notification-bell{
+    position:fixed;
+    top:30px;
+    right:30px;
+    font-size:65px;
+    z-index:999;
+    animation:bellShake 2s infinite;
+    filter:drop-shadow(0 0 15px #00ffff);
+}
+
+@keyframes bellShake{
+    0%{transform:rotate(0deg);}
+    20%{transform:rotate(-15deg);}
+    40%{transform:rotate(15deg);}
+    60%{transform:rotate(-10deg);}
+    80%{transform:rotate(10deg);}
+    100%{transform:rotate(0deg);}
+}
+
+/* Radar Animation */
+
+.radar{
+    position:fixed;
+    top:75px;
+    right:55px;
+    border:2px solid cyan;
+    border-radius:50%;
+    opacity:.6;
+    animation:radarPulse 3s linear infinite;
+    z-index:998;
+}
+
+.radar1{
+    width:70px;
+    height:70px;
+}
+
+.radar2{
+    width:120px;
+    height:120px;
+    animation-delay:1s;
+}
+
+.radar3{
+    width:170px;
+    height:170px;
+    animation-delay:2s;
+}
+
+@keyframes radarPulse{
+    0%{
+        transform:scale(.5);
+        opacity:1;
+    }
+    100%{
+        transform:scale(1.8);
+        opacity:0;
+    }
+}
+
+/* Glowing Title */
+
+.title{
+    animation:titleGlow 2.5s infinite alternate;
+}
+
+@keyframes titleGlow{
+    from{
+        text-shadow:0 0 10px cyan;
+    }
+    to{
+        text-shadow:
+        0 0 20px cyan,
+        0 0 35px #00ffff,
+        0 0 50px #00ffff;
+    }
+}
+
+/* Floating Cards */
+
+.card{
+    animation:cardFloat 4s ease-in-out infinite;
+}
+
+@keyframes cardFloat{
+    0%{transform:translateY(0);}
+    50%{transform:translateY(-6px);}
+    100%{transform:translateY(0);}
+}
+
+/* Scrollbar */
+
+::-webkit-scrollbar{
+    width:10px;
+}
+
+::-webkit-scrollbar-track{
+    background:#081229;
+}
+
+::-webkit-scrollbar-thumb{
+    background:cyan;
+    border-radius:20px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background:#00bcd4;
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+    .notification-bell{
+        font-size:45px;
+        top:15px;
+        right:15px;
+    }
+
+    .action-btn{
+        width:100%;
+        margin-top:10px;
+    }
+
+    .title{
+        font-size:28px;
+    }
+
+    .subtitle{
+        font-size:15px;
+    }
+
+    .main-card{
+        padding:20px;
+    }
+
+}
+
+@media(max-width:576px){
+
+    .card{
+        margin-bottom:20px;
+    }
+
+    h2{
+        font-size:24px;
+    }
+
+    h4{
+        font-size:18px;
+    }
+
+}
+
+</style>
+
+</body>
+</html>
