@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Smart Parking - Login</title>
+
+    <!-- Bootstrap -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- Main CSS -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <!-- Animation CSS -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/animation.css') }}"
+    >
+
+</head>
+
+<body class="page-transition">
+
+    <!-- =========================
+         Moving Car Animation
+    ========================== -->
+
+    <div class="car">
+        🚗
+    </div>
+
+
+    <!-- =========================
+         Login Container
+    ========================== -->
+
+    <div class="login-container">
+
+        <div class="login-box fade-in glow">
+
+            <!-- Title -->
+
+            <h2 class="login-title text-center">
+
+                🅿️ AI Smart Parking System
+
+            </h2>
+
+            <p class="text-center text-light mb-4">
+
+                Login to access your dashboard
+
+            </p>
+
+
+            <!-- =========================
+                 ERROR MESSAGE
+            ========================== -->
+
+            {% if error %}
+
+            <div
+                class="alert alert-danger text-center"
+                role="alert"
+            >
+
+                🚫 {{ error }}
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- =========================
+                 SUCCESS MESSAGE
+            ========================== -->
+
+            {% if message %}
+
+            <div
+                class="alert alert-success text-center"
+                role="alert"
+            >
+
+                ✅ {{ message }}
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- =========================
+                 LOGIN FORM
+            ========================== -->
+
+            <form
+                method="POST"
+                action="{{ url_for('login') }}"
+                onsubmit="return validateLogin()"
+            >
+
+                <!-- CSRF Protection -->
+
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}"
+                >
+
+
+                <!-- =========================
+                     EMAIL
+                ========================== -->
+
+                <div class="mb-3">
+
+                    <label
+                        for="email"
+                        class="form-label text-light"
+                    >
+
+                        📧 Email Address
+
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        class="form-control"
+                        placeholder="Enter your email"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- =========================
+                     PASSWORD
+                ========================== -->
+
+                <div class="mb-3">
+
+                    <label
+                        for="password"
+                        class="form-label text-light"
+                    >
+
+                        🔐 Password
+
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="form-control"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- =========================
+                     SHOW PASSWORD
+                ========================== -->
+
+                <div class="form-check mb-3">
+
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="showPassword"
+                        onclick="togglePassword()"
+                    >
+
+                    <label
+                        class="form-check-label text-light"
+                        for="showPassword"
+                    >
+
+                        👁️ Show Password
+
+                    </label>
+
+                </div>
+
+
+                <!-- =========================
+                     LOGIN BUTTON
+                ========================== -->
+
+                <button
+                    type="submit"
+                    class="btn btn-primary login-btn glow-button w-100"
+                >
+
+                    🚗 Login
+
+                </button>
+
+            </form>
+
+
+            <!-- =========================
+                 DIVIDER
+            ========================== -->
+
+            <hr class="my-4">
+
+
+            <!-- =========================
+                 REGISTER
+            ========================== -->
+
+            <div class="text-center">
+
+                <p class="text-light">
+
+                    Don't have an account?
+
+                </p>
+
+                <a
+                    href="{{ url_for('register') }}"
+                    class="btn btn-success"
+                >
+
+                    📝 Create Account
+
+                </a>
+
+                <br><br>
+
+
+                <!-- =========================
+                     HOME
+                ========================== -->
+
+                <a
+                    href="{{ url_for('home') }}"
+                    class="btn btn-outline-light"
+                >
+
+                    🏠 Back to Home
+
+                </a>
+
+            </div>
+
+
+            <!-- =========================
+                 FOOTER
+            ========================== -->
+
+            <div class="footer text-center mt-4">
+
+                <p>
+
+                    © 2026 AI Smart Parking System
+
+                </p>
+
+                <p>
+
+                    Developed using
+
+                    <br>
+
+                    Flask • Python • AI
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         Moving Car
+    ========================== -->
+
+    <div class="car">
+
+        🚗
+
+    </div>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
+
+    <script>
+
+        // =========================
+        // LOGIN VALIDATION
+        // =========================
+
+        function validateLogin() {
+
+            const email =
+                document.getElementById("email").value.trim();
+
+            const password =
+                document.getElementById("password").value.trim();
+
+
+            if (email === "") {
+
+                alert("Please enter your email.");
+
+                return false;
+
+            }
+
+
+            if (password === "") {
+
+                alert("Please enter your password.");
+
+                return false;
+
+            }
+
+
+            if (password.length < 8) {
+
+                alert(
+                    "Password must contain at least 8 characters."
+                );
+
+                return false;
+
+            }
+
+
+            return true;
+
+        }
+
+
+        // =========================
+        // SHOW / HIDE PASSWORD
+        // =========================
+
+        function togglePassword() {
+
+            const password =
+                document.getElementById("password");
+
+            const checkbox =
+                document.getElementById("showPassword");
+
+
+            if (checkbox.checked) {
+
+                password.type = "text";
+
+            } else {
+
+                password.type = "password";
+
+            }
+
+        }
+
+
+        // =========================
+        // PAGE LOADED
+        // =========================
+
+        window.onload = function () {
+
+            console.log(
+                "✅ AI Smart Parking Login Page Loaded"
+            );
+
+        };
+
+    </script>
+
+
+    <!-- Animation JavaScript -->
+
+    <script
+        src="{{ url_for('static', filename='js/animation.js') }}"
+    ></script>
+
+</body>
+
+</html>

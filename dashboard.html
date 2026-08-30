@@ -1,0 +1,4213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Smart Parking Dashboard</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+rel="stylesheet">
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='css/dashboard_animation.css') }}">
+
+<!-- Leaflet CSS -->
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<!-- Leaflet JS -->
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+<style>
+
+/* =========================================
+   MAIN BODY
+========================================= */
+
+body{
+
+    font-family:'Segoe UI',sans-serif;
+
+    background:#050816;
+
+    color:white;
+
+    min-height:100vh;
+
+    overflow-x:hidden;
+
+}
+
+
+/* =========================================
+   ANIMATED BACKGROUND
+========================================= */
+
+.animated-bg{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100%;
+
+    background:
+    linear-gradient(
+        -45deg,
+        #020617,
+        #071a2d,
+        #0f172a,
+        #001f3f,
+        #020617
+    );
+
+    background-size:400% 400%;
+
+    animation:backgroundMove 15s ease infinite;
+
+    z-index:-100;
+
+}
+
+@keyframes backgroundMove{
+
+    0%{
+
+        background-position:0% 50%;
+
+    }
+
+    50%{
+
+        background-position:100% 50%;
+
+    }
+
+    100%{
+
+        background-position:0% 50%;
+
+    }
+
+}
+
+
+/* =========================================
+   GLOWING CIRCLES
+========================================= */
+
+.circle{
+
+    position:absolute;
+
+    border-radius:50%;
+
+    filter:blur(50px);
+
+    opacity:.35;
+
+    animation:circleFloat 10s infinite alternate;
+
+}
+
+.c1{
+
+    width:300px;
+    height:300px;
+
+    background:#00ffff;
+
+    top:5%;
+    left:5%;
+
+}
+
+.c2{
+
+    width:250px;
+    height:250px;
+
+    background:#7c4dff;
+
+    top:20%;
+    right:5%;
+
+    animation-delay:3s;
+
+}
+
+.c3{
+
+    width:280px;
+    height:280px;
+
+    background:#00ff99;
+
+    bottom:5%;
+    left:35%;
+
+    animation-delay:5s;
+
+}
+
+.c4{
+
+    width:200px;
+    height:200px;
+
+    background:#ff00ff;
+
+    bottom:20%;
+    right:15%;
+
+    animation-delay:7s;
+
+}
+
+@keyframes circleFloat{
+
+    from{
+
+        transform:translate(0,0);
+
+    }
+
+    to{
+
+        transform:translate(70px,-60px);
+
+    }
+
+}
+
+
+/* =========================================
+   MOVING CARS
+========================================= */
+
+.moving-car{
+
+    position:fixed;
+
+    font-size:50px;
+
+    bottom:30px;
+
+    z-index:-2;
+
+    animation:carMove 18s linear infinite;
+
+}
+
+.car1{
+
+    animation-delay:0s;
+
+}
+
+.car2{
+
+    bottom:100px;
+
+    animation-delay:6s;
+
+}
+
+@keyframes carMove{
+
+    from{
+
+        left:-120px;
+
+    }
+
+    to{
+
+        left:110%;
+
+    }
+
+}
+
+
+/* =========================================
+   MAIN CONTAINER
+========================================= */
+
+.container{
+
+    position:relative;
+
+    z-index:5;
+
+}
+
+
+/* =========================================
+   DASHBOARD CARDS
+========================================= */
+
+.card{
+
+    background:rgba(255,255,255,.09) !important;
+
+    color:white;
+
+    border:1px solid rgba(255,255,255,.15);
+
+    border-radius:22px;
+
+    backdrop-filter:blur(18px);
+
+    box-shadow:
+    0 0 25px rgba(0,255,255,.18);
+
+    transition:.4s;
+
+}
+
+.card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:
+    0 0 35px rgba(0,255,255,.35);
+
+}
+
+
+/* =========================================
+   DASHBOARD TITLE
+========================================= */
+
+h2{
+
+    color:#00ffff;
+
+    font-weight:bold;
+
+    text-shadow:
+    0 0 10px cyan,
+    0 0 25px cyan;
+
+}
+
+h3{
+
+    color:#00ffff;
+
+    font-weight:bold;
+
+}
+
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+.btn{
+
+    border-radius:30px;
+
+    font-weight:bold;
+
+    margin:4px;
+
+    transition:.3s;
+
+}
+
+.btn:hover{
+
+    transform:translateY(-3px) scale(1.03);
+
+    box-shadow:0 0 20px cyan;
+
+}
+
+
+/* =========================================
+   TABLE
+========================================= */
+
+.table{
+
+    color:white !important;
+
+}
+
+.table th{
+
+    color:#00ffff !important;
+
+    background:rgba(0,255,255,.08) !important;
+
+}
+
+.table td{
+
+    color:white !important;
+
+    background:rgba(255,255,255,.03) !important;
+
+}
+
+.table tbody tr{
+
+    transition:.3s;
+
+}
+
+.table tbody tr:hover{
+
+    background:rgba(0,255,255,.12);
+
+}
+
+
+/* =========================================
+   CORPORATION APPROVAL CARD
+========================================= */
+
+.approval-card{
+
+    border:1px solid rgba(0,255,255,.4);
+
+    box-shadow:
+    0 0 25px rgba(0,255,255,.25);
+
+    overflow:hidden;
+
+}
+
+.approval-header{
+
+    padding:18px;
+
+    background:
+    linear-gradient(
+        90deg,
+        rgba(0,255,255,.15),
+        rgba(124,77,255,.15)
+    );
+
+    border-bottom:1px solid rgba(255,255,255,.15);
+
+}
+
+.approval-title{
+
+    color:#00ffff;
+
+    font-size:25px;
+
+    font-weight:bold;
+
+}
+
+
+/* =========================================
+   STATUS BADGES
+========================================= */
+
+.approval-status{
+
+    display:inline-block;
+
+    padding:9px 18px;
+
+    border-radius:30px;
+
+    font-weight:bold;
+
+    font-size:14px;
+
+}
+
+.status-pending{
+
+    background:#ffc107;
+
+    color:#000;
+
+    box-shadow:0 0 15px rgba(255,193,7,.5);
+
+}
+
+.status-approved{
+
+    background:#00ff88;
+
+    color:#001b0d;
+
+    box-shadow:0 0 20px rgba(0,255,136,.6);
+
+}
+
+.status-rejected{
+
+    background:#ff3b3b;
+
+    color:white;
+
+    box-shadow:0 0 20px rgba(255,59,59,.5);
+
+}
+
+
+/* =========================================
+   APPROVAL ANIMATION
+========================================= */
+
+.approval-icon{
+
+    font-size:55px;
+
+    animation:approvalPulse 2s infinite;
+
+}
+
+@keyframes approvalPulse{
+
+    0%{
+
+        transform:scale(1);
+
+        filter:drop-shadow(0 0 5px cyan);
+
+    }
+
+    50%{
+
+        transform:scale(1.12);
+
+        filter:drop-shadow(0 0 25px cyan);
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+        filter:drop-shadow(0 0 5px cyan);
+
+    }
+
+}
+
+
+/* =========================================
+   FLOATING PARTICLES
+========================================= */
+
+.particle{
+
+    position:fixed;
+
+    width:7px;
+
+    height:7px;
+
+    background:#00ffff;
+
+    border-radius:50%;
+
+    opacity:.7;
+
+    z-index:-1;
+
+    animation:particleMove 12s linear infinite;
+
+}
+
+.p1{
+
+    left:10%;
+
+    animation-delay:0s;
+
+}
+
+.p2{
+
+    left:30%;
+
+    animation-delay:3s;
+
+}
+
+.p3{
+
+    left:55%;
+
+    animation-delay:6s;
+
+}
+
+.p4{
+
+    left:80%;
+
+    animation-delay:9s;
+
+}
+
+@keyframes particleMove{
+
+    0%{
+
+        transform:translateY(100vh);
+
+        opacity:0;
+
+    }
+
+    20%{
+
+        opacity:.8;
+
+    }
+
+    100%{
+
+        transform:translateY(-120vh);
+
+        opacity:0;
+
+    }
+
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media(max-width:768px){
+
+    .btn{
+
+        width:100%;
+
+        margin:5px 0;
+
+    }
+
+    h2{
+
+        font-size:25px;
+
+    }
+
+    h3{
+
+        font-size:21px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     ANIMATED BACKGROUND
+========================================= -->
+
+<div class="animated-bg">
+
+    <div class="circle c1"></div>
+
+    <div class="circle c2"></div>
+
+    <div class="circle c3"></div>
+
+    <div class="circle c4"></div>
+
+</div>
+
+
+<!-- =========================================
+     MOVING VEHICLES
+========================================= -->
+
+<div class="moving-car car1">
+
+🚗
+
+</div>
+
+
+<div class="moving-car car2">
+
+🚙
+
+</div>
+
+
+<!-- =========================================
+     FLOATING PARTICLES
+========================================= -->
+
+<div class="particle p1"></div>
+
+<div class="particle p2"></div>
+
+<div class="particle p3"></div>
+
+<div class="particle p4"></div>
+
+
+
+<div class="container mt-4 mb-5">
+
+
+<!-- =========================================
+     HEADER
+========================================= -->
+
+<div class="card">
+
+<div class="card-body text-center">
+
+
+<h2>
+
+🚗 AI Smart Parking Dashboard
+
+</h2>
+
+
+<h4>
+
+Welcome {{ username }}
+
+</h4>
+
+
+<p class="text-light">
+
+Smart • Secure • Intelligent Parking Management
+
+</p>
+
+
+<hr>
+
+
+<a href="/add_vehicle"
+class="btn btn-success">
+
+➕ Add Vehicle
+
+</a>
+
+
+<a href="/book_slot"
+class="btn btn-warning">
+
+🅿 Book Parking Slot
+
+</a>
+
+<a href="/find_parking"
+class="btn btn-info">
+
+🔍 Find Parking
+
+</a>
+
+<a href="/vehicle_entry"
+class="btn btn-success">
+
+🚗 Vehicle Entry
+
+</a>
+
+<a href="/vehicle_exit"
+class="btn btn-danger">
+
+🚪 Vehicle Exit
+
+</a>
+
+
+{% if my_slot %}
+
+
+<a href="/generate_qr/{{ my_slot.id }}"
+class="btn btn-dark">
+
+📱 Generate QR Code
+
+</a>
+
+
+<a href="/entry/{{ my_slot.id }}"
+class="btn btn-primary">
+
+🚗 Vehicle Entry (Legacy)
+
+</a>
+
+
+{% endif %}
+
+
+<a href="/find_vehicle"
+class="btn btn-info">
+
+📍 Find My Vehicle
+
+</a>
+
+
+<a href="/theft_alerts"
+class="btn btn-danger">
+
+🚨 Theft Alerts
+
+</a>
+
+
+<a href="/notifications"
+class="btn btn-primary">
+
+🔔 Notifications
+
+</a>
+<a href="{{ url_for('corporation_dashboard') }}"
+   class="btn btn-warning">
+
+    🏢 Corporation Approval
+
+</a>
+{% if session.get("email") %}
+
+<a href="{{ url_for('admin_dashboard') }}"
+   class="btn btn-dark">
+
+    🏢 Admin Dashboard
+
+</a>
+
+{% endif %}
+
+
+<a href="/parking_map"
+class="btn btn-dark">
+
+🗺 Parking Map
+
+</a>
+
+
+
+<a href="/logout"
+class="btn btn-danger">
+
+🚪 Logout
+
+</a>
+
+
+</div>
+
+</div>
+
+
+
+<!-- =========================================
+     CORPORATION APPROVAL STATUS
+========================================= -->
+
+<div class="card approval-card mt-4">
+
+
+<div class="approval-header">
+
+
+<div class="d-flex align-items-center">
+
+
+<div class="approval-icon me-3">
+
+🏢
+
+</div>
+
+
+<div>
+
+
+<div class="approval-title">
+
+Corporation Parking Approval
+
+</div>
+
+
+<p class="mb-0 text-light">
+
+Your parking request is automatically sent to the corporation after booking.
+
+</p>
+
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<div class="card-body">
+
+
+{% if corporation_request %}
+
+
+<div class="row align-items-center">
+
+
+<!-- STATUS -->
+
+<div class="col-md-3 text-center mb-3">
+
+
+{% if corporation_request.status == "Pending" %}
+
+<div class="approval-status status-pending">
+
+⏳ WAITING FOR APPROVAL
+
+</div>
+
+
+{% elif corporation_request.status == "Approved" %}
+
+<div class="approval-status status-approved">
+
+✅ PARKING APPROVED
+
+</div>
+
+
+{% elif corporation_request.status == "Rejected" %}
+
+<div class="approval-status status-rejected">
+
+❌ PARKING REJECTED
+
+</div>
+
+
+{% else %}
+
+<div class="approval-status status-pending">
+
+⏳ {{ corporation_request.status }}
+
+</div>
+
+{% endif %}
+
+
+</div>
+
+
+<!-- BOOKING DETAILS -->
+
+<div class="col-md-9">
+
+
+<div class="row">
+
+
+<div class="col-md-6">
+
+<p>
+
+<b>👤 Owner:</b>
+
+{{ corporation_request.owner }}
+
+</p>
+
+
+<p>
+
+<b>🚘 Vehicle:</b>
+
+{{ corporation_request.vehicle_number }}
+
+</p>
+
+
+</div>
+
+
+<div class="col-md-6">
+
+<p>
+
+<b>🅿 Parking Slot:</b>
+
+{{ corporation_request.slot_number }}
+
+</p>
+
+
+<p>
+
+<b>🕒 Request Time:</b>
+
+{{ corporation_request.created_at }}
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+<hr>
+
+
+<p>
+
+<b>📨 Corporation Message:</b>
+
+<br>
+
+<span class="text-info">
+
+{{ corporation_request.message }}
+
+</span>
+
+</p>
+
+
+{% if corporation_request.status == "Pending" %}
+
+<div class="alert alert-warning mt-3">
+
+⏳ Your request has been sent successfully.
+
+<br>
+
+The corporation must approve the request before parking is allowed.
+
+</div>
+
+
+{% elif corporation_request.status == "Approved" %}
+
+<div class="alert alert-success mt-3">
+
+✅ <b>Parking Approved!</b>
+
+<br>
+
+The corporation has allowed your vehicle to park in
+
+<b>Slot {{ corporation_request.slot_number }}</b>.
+
+</div>
+
+
+{% elif corporation_request.status == "Rejected" %}
+
+<div class="alert alert-danger mt-3">
+
+❌ <b>Parking Request Rejected.</b>
+
+<br>
+
+Please contact the corporation or select another parking slot.
+
+</div>
+
+{% endif %}
+
+
+</div>
+
+</div>
+
+
+{% else %}
+
+
+<div class="text-center py-4">
+
+
+<div style="font-size:60px;">
+
+📨
+
+</div>
+
+
+<h4 class="text-info">
+
+No Parking Approval Request
+
+</h4>
+
+
+<p class="text-light">
+
+Book a parking slot to automatically send an approval request to the corporation.
+
+</p>
+
+
+<a href="/book_slot"
+class="btn btn-warning">
+
+🅿 Book Parking Slot
+
+</a>
+
+
+</div>
+
+
+{% endif %}
+
+
+</div>
+
+</div>
+
+
+
+<!-- =========================================
+     AI RECOMMENDED PARKING SLOT
+========================================= -->
+
+<div class="card mt-4">
+
+
+<div class="card-body text-center">
+
+
+<h3>
+
+🤖 AI Recommended Parking Slot
+
+</h3>
+
+
+{% if recommended_slot %}
+
+
+<div class="alert alert-success">
+
+
+<h2>
+
+{{ recommended_slot.slot_number }}
+
+</h2>
+
+
+<p>
+
+<b>AI Score:</b>
+
+{{ recommended_slot.ai_score }}
+
+</p>
+
+
+<p>
+
+<b>Distance:</b>
+
+{{ recommended_slot.distance }} meters
+
+</p>
+
+
+<p>
+
+<b>Status:</b>
+
+{{ recommended_slot.status }}
+
+</p>
+
+
+<p>
+
+<b>Safety Score:</b>
+
+{{ recommended_slot.safety_score }}
+
+</p>
+
+
+<p>
+
+{% if recommended_slot.cctv %}
+
+📹 CCTV Available
+
+{% else %}
+
+❌ CCTV Not Available
+
+{% endif %}
+
+</p>
+
+
+<p>
+
+{% if recommended_slot.lighting %}
+
+💡 Well Lit Area
+
+{% else %}
+
+🌙 Low Lighting
+
+{% endif %}
+
+</p>
+
+
+<p>
+
+{% if recommended_slot.near_entrance %}
+
+🚪 Near Entrance
+
+{% else %}
+
+🚶 Away From Entrance
+
+{% endif %}
+
+</p>
+
+
+</div>
+
+
+{% else %}
+
+
+<div class="alert alert-danger">
+
+No Parking Slot Available
+
+</div>
+
+
+{% endif %}
+
+
+</div>
+
+</div>
+
+<!-- =========================================
+     AVAILABLE PARKING AREAS
+========================================= -->
+
+<div class="card mt-4">
+
+    <div class="card-body">
+
+        <h3 class="mb-4">
+
+            🅿 Available Parking Areas
+
+        </h3>
+
+        {% if parking_areas %}
+
+        <div class="row g-3">
+
+            {% for area in parking_areas %}
+
+            <div class="col-md-4">
+
+                <div class="card h-100" 
+                     style="background:rgba(255,255,255,.06) !important;">
+
+                    <div class="card-body">
+
+                        <div style="font-size:35px; margin-bottom:10px;">
+
+                            🏢
+
+                        </div>
+
+                        <h5 class="text-info">
+
+                            {{ area.name }}
+
+                        </h5>
+
+                        <p class="text-light mb-2">
+
+                            {{ area.address }}
+
+                        </p>
+
+                        <div class="row g-2 mb-3">
+
+                            <div class="col-6">
+
+                                <small class="text-muted">Total</small>
+
+                                <div class="text-info fw-bold">
+
+                                    {{ area.total_slots }}
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-6">
+
+                                <small class="text-muted">Available</small>
+
+                                <div class="text-success fw-bold">
+
+                                    {{ area.available_slots }}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <a href="/parking_details/{{ area.id }}" 
+                           class="btn btn-primary btn-sm w-100">
+
+                            View Details
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% else %}
+
+        <div class="alert alert-info text-center">
+
+            No parking areas available.
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     LIVE VEHICLE LOCATION
+========================================= -->
+
+<div class="card mt-4">
+
+    <div class="card-body">
+
+        <h3 class="mb-4">
+
+            📍 Live Vehicle Location
+
+        </h3>
+
+
+        {% if vehicle_location %}
+
+        <div class="row g-4">
+
+            <!-- LOCATION MAP INFO -->
+
+            <div class="col-md-5">
+
+                <div class="card h-100"
+                     style="
+                     background:rgba(0,255,255,.08) !important;
+                     border:1px solid rgba(0,255,255,.3);
+                     ">
+
+                    <div class="card-body text-center">
+
+                        <div style="font-size:65px;">
+
+                            📍
+
+                        </div>
+
+                        <h4 class="text-info">
+
+                            Vehicle Parked
+
+                        </h4>
+
+                        <p class="text-light">
+
+                            Your vehicle is currently located in:
+
+                        </p>
+
+                        <h2 class="text-warning">
+
+                            {{ vehicle_location.slot_number }}
+
+                        </h2>
+
+                        <span class="approval-status status-approved">
+
+                            🚗 PARKED
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- LOCATION DETAILS -->
+
+            <div class="col-md-7">
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered align-middle">
+
+                        <tr>
+
+                            <th>
+
+                                🅿 Parking Slot
+
+                            </th>
+
+                            <td>
+
+                                <b class="text-info">
+
+                                    {{ vehicle_location.slot_number }}
+
+                                </b>
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+
+                                🏢 Zone
+
+                            </th>
+
+                            <td>
+
+                                {{ vehicle_location.zone }}
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+
+                                🏬 Floor
+
+                            </th>
+
+                            <td>
+
+                                {{ vehicle_location.floor }}
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+
+                                🌐 Latitude
+
+                            </th>
+
+                            <td>
+
+                                {{ vehicle_location.latitude }}
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+
+                                🌐 Longitude
+
+                            </th>
+
+                            <td>
+
+                                {{ vehicle_location.longitude }}
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+
+                                🕒 Parking Time
+
+                            </th>
+
+                            <td>
+
+                                {{ vehicle_location.parking_time }}
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+
+                                📌 Status
+
+                            </th>
+
+                            <td>
+
+                                <span class="approval-status status-approved">
+
+                                    {{ vehicle_location.status }}
+
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {% else %}
+
+        <div class="alert alert-info text-center">
+
+            <div style="font-size:55px;">
+
+                🚗
+
+            </div>
+
+            <h4>
+
+                Vehicle Not Parked
+
+            </h4>
+
+            <p>
+
+                You have not parked your vehicle yet.
+
+            </p>
+
+            <a href="/book_slot"
+               class="btn btn-warning">
+
+                🅿 Book Parking Slot
+
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================
+     MY REGISTERED VEHICLES
+========================================= -->
+
+<div class="card mt-4">
+
+    <div class="card-body">
+
+        <h3 class="mb-4">
+
+            🚘 My Registered Vehicles
+
+        </h3>
+
+
+        {% if vehicles %}
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+
+                            🚘 Vehicle Number
+
+                        </th>
+
+                        <th>
+
+                            🚗 Vehicle Type
+
+                        </th>
+
+                        <th>
+
+                            🎨 Color
+
+                        </th>
+
+                        <th>
+
+                            👤 Owner
+
+                        </th>
+
+                        <th>
+
+                            📌 Status
+
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for v in vehicles %}
+
+                    <tr>
+
+                        <td>
+
+                            <strong class="text-info">
+
+                                {{ v.vehicle_number }}
+
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            {{ v.vehicle_type }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ v.color }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ username }}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if my_slot and my_slot.status == "Occupied" %}
+
+                            <span class="approval-status status-approved">
+
+                                🚗 Parked
+
+                            </span>
+
+                            {% else %}
+
+                            <span class="badge bg-secondary">
+
+                                Not Parked
+
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="alert alert-warning text-center">
+
+            <div style="font-size:55px;">
+
+                🚘
+
+            </div>
+
+            <h4>
+
+                No Vehicle Registered
+
+            </h4>
+
+            <p>
+
+                Add your vehicle before booking a parking slot.
+
+            </p>
+
+            <a href="/add_vehicle"
+               class="btn btn-success">
+
+                ➕ Add Vehicle
+
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================
+     MY PARKING SLOT
+========================================= -->
+
+<div class="card mt-4">
+
+    <div class="card-body">
+
+        <h3 class="mb-4">
+
+            🅿 My Parking Slot
+
+        </h3>
+
+
+        {% if my_slot %}
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+
+                            🅿 Slot Number
+
+                        </th>
+
+                        <th>
+
+                            📌 Status
+
+                        </th>
+
+                        <th>
+
+                            👤 Owner
+
+                        </th>
+
+                        <th>
+
+                            📏 Distance
+
+                        </th>
+
+                        <th>
+
+                            🤖 AI Score
+
+                        </th>
+
+                        <th>
+
+                            🛡 Safety Score
+
+                        </th>
+
+                        <th>
+
+                            📹 CCTV
+
+                        </th>
+
+                        <th>
+
+                            💡 Lighting
+
+                        </th>
+
+                        <th>
+
+                            🚪 Near Entrance
+
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    <tr>
+
+                        <!-- SLOT -->
+
+                        <td>
+
+                            <h4 class="text-info mb-0">
+
+                                {{ my_slot.slot_number }}
+
+                            </h4>
+
+                        </td>
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+                            {% if my_slot.status == "Occupied" %}
+
+                            <span class="approval-status status-approved">
+
+                                🚗 Occupied
+
+                            </span>
+
+                            {% else %}
+
+                            <span class="badge bg-success">
+
+                                Available
+
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- OWNER -->
+
+                        <td>
+
+                            {{ my_slot.owner }}
+
+                        </td>
+
+
+                        <!-- DISTANCE -->
+
+                        <td>
+
+                            {{ my_slot.distance }} meters
+
+                        </td>
+
+
+                        <!-- AI SCORE -->
+
+                        <td>
+
+                            <strong class="text-info">
+
+                                {{ my_slot.ai_score }}
+
+                            </strong>
+
+                        </td>
+
+
+                        <!-- SAFETY -->
+
+                        <td>
+
+                            <strong class="text-success">
+
+                                {{ my_slot.safety_score }}
+
+                            </strong>
+
+                        </td>
+
+
+                        <!-- CCTV -->
+
+                        <td>
+
+                            {% if my_slot.cctv %}
+
+                            <span class="text-success">
+
+                                ✅ Available
+
+                            </span>
+
+                            {% else %}
+
+                            <span class="text-danger">
+
+                                ❌ No
+
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- LIGHTING -->
+
+                        <td>
+
+                            {% if my_slot.lighting %}
+
+                            <span class="text-success">
+
+                                💡 Good
+
+                            </span>
+
+                            {% else %}
+
+                            <span class="text-warning">
+
+                                🌙 Poor
+
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ENTRANCE -->
+
+                        <td>
+
+                            {% if my_slot.near_entrance %}
+
+                            <span class="text-success">
+
+                                🚪 Yes
+
+                            </span>
+
+                            {% else %}
+
+                            <span class="text-secondary">
+
+                                ❌ No
+
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- SLOT INFORMATION -->
+
+        <div class="row mt-4 g-3">
+
+            <div class="col-md-4">
+
+                <div class="card text-center h-100">
+
+                    <div class="card-body">
+
+                        <div style="font-size:40px;">
+
+                            🤖
+
+                        </div>
+
+                        <h5>
+
+                            AI Score
+
+                        </h5>
+
+                        <h2 class="text-info">
+
+                            {{ my_slot.ai_score }}
+
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="card text-center h-100">
+
+                    <div class="card-body">
+
+                        <div style="font-size:40px;">
+
+                            🛡️
+
+                        </div>
+
+                        <h5>
+
+                            Safety Score
+
+                        </h5>
+
+                        <h2 class="text-success">
+
+                            {{ my_slot.safety_score }}
+
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="card text-center h-100">
+
+                    <div class="card-body">
+
+                        <div style="font-size:40px;">
+
+                            📏
+
+                        </div>
+
+                        <h5>
+
+                            Distance
+
+                        </h5>
+
+                        <h2 class="text-warning">
+
+                            {{ my_slot.distance }}m
+
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- SLOT ACTIONS -->
+
+        <div class="text-center mt-4">
+
+            {% if corporation_request %}
+
+                {% if corporation_request.status == "Approved" %}
+
+                <div class="alert alert-success">
+
+                    ✅
+
+                    <b>Corporation approved your parking request.</b>
+
+                    <br>
+
+                    You are allowed to park in
+
+                    <b>Slot {{ my_slot.slot_number }}</b>.
+
+                </div>
+
+                {% elif corporation_request.status == "Pending" %}
+
+                <div class="alert alert-warning">
+
+                    ⏳
+
+                    <b>Waiting for corporation approval.</b>
+
+                    <br>
+
+                    Parking access will be available after approval.
+
+                </div>
+
+                {% elif corporation_request.status == "Rejected" %}
+
+                <div class="alert alert-danger">
+
+                    ❌
+
+                    <b>Corporation rejected this parking request.</b>
+
+                    <br>
+
+                    Please choose another parking slot.
+
+                </div>
+
+                {% endif %}
+
+            {% endif %}
+
+        </div>
+
+
+        {% else %}
+
+        <div class="alert alert-warning text-center">
+
+            <div style="font-size:60px;">
+
+                🅿️
+
+            </div>
+
+            <h4>
+
+                No Parking Slot Booked Yet
+
+            </h4>
+
+            <p>
+
+                Select an available parking slot to send a request to the corporation.
+
+            </p>
+
+            <a href="/book_slot"
+               class="btn btn-warning">
+
+                🅿 Book Parking Slot
+
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+<!-- =========================================
+     PARKING RECORDS
+========================================= -->
+
+<div class="card mt-4">
+
+    <div class="card-body">
+
+        <h3 class="mb-4">
+
+            📋 Parking Records
+
+        </h3>
+
+
+        {% if records %}
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            🚘 Vehicle
+                        </th>
+
+                        <th>
+                            🅿 Slot
+                        </th>
+
+                        <th>
+                            🕒 Entry Time
+                        </th>
+
+                        <th>
+                            🚪 Exit Time
+                        </th>
+
+                        <th>
+                            📌 Status
+                        </th>
+
+                        <th>
+                            💰 Parking Fee
+                        </th>
+
+                        <th>
+                            🛡 Security
+                        </th>
+
+                        <th>
+                            ⚙ Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for record in records %}
+
+                    <tr>
+
+                        <!-- VEHICLE -->
+
+                        <td>
+
+                            <strong class="text-info">
+
+                                {{ record.vehicle_number }}
+
+                            </strong>
+
+                        </td>
+
+
+                        <!-- SLOT -->
+
+                        <td>
+
+                            <span class="badge bg-primary">
+
+                                {{ record.slot_number }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ENTRY -->
+
+                        <td>
+
+                            {{ record.entry_time }}
+
+                        </td>
+
+
+                        <!-- EXIT -->
+
+                        <td>
+
+                            {% if record.exit_time %}
+
+                                {{ record.exit_time }}
+
+                            {% else %}
+
+                                <span class="text-warning">
+
+                                    Not Exited
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+                            {% if record.status == "Inside" %}
+
+                                <span class="approval-status status-approved">
+
+                                    🚗 Inside
+
+                                </span>
+
+                            {% elif record.status == "Exited" %}
+
+                                <span class="badge bg-secondary">
+
+                                    ✅ Exited
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-warning text-dark">
+
+                                    {{ record.status }}
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- PARKING FEE -->
+
+                        <td>
+
+                            {% if record.exit_time %}
+
+                                <strong class="text-success">
+
+                                    ₹{{ record.parking_fee }}
+
+                                </strong>
+
+                            {% else %}
+
+                                <span class="text-secondary">
+
+                                    Not Calculated
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- SECURITY -->
+
+                        <td>
+
+                            {% if record.status == "Inside" %}
+
+                                <span class="text-success">
+
+                                    🛡 Protected
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="text-success">
+
+                                    ✅ Safe
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ACTION -->
+
+                        <td>
+
+                            {% if record.status == "Inside" %}
+
+                                <a href="/theft_alert/{{ record.id }}"
+                                   class="btn btn-warning btn-sm">
+
+                                    🚨 Alert
+
+                                </a>
+
+
+                                <a href="/exit/{{ record.id }}"
+                                   class="btn btn-danger btn-sm">
+
+                                    🚗 Exit
+
+                                </a>
+
+                            {% else %}
+
+                                <span class="badge bg-secondary">
+
+                                    Completed
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {% else %}
+
+        <div class="alert alert-info text-center">
+
+            <div style="font-size:55px;">
+
+                📋
+
+            </div>
+
+            <h4>
+
+                No Parking Records Available
+
+            </h4>
+
+            <p>
+
+                Your parking activity will appear here after you park your vehicle.
+
+            </p>
+
+
+            <a href="/book_slot"
+               class="btn btn-warning">
+
+                🅿 Book Parking Slot
+
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================
+     CORPORATION NOTIFICATION SUMMARY
+========================================= -->
+
+<div class="card mt-4">
+
+    <div class="card-body">
+
+        <h3 class="mb-4">
+
+            🏢 Corporation Approval Notification
+
+        </h3>
+
+
+        {% if corporation_request %}
+
+
+        <div class="row align-items-center">
+
+
+            <!-- ICON -->
+
+            <div class="col-md-3 text-center">
+
+                {% if corporation_request.status == "Approved" %}
+
+                    <div style="
+                        font-size:70px;
+                        animation:approvalPulse 2s infinite;
+                    ">
+
+                        ✅
+
+                    </div>
+
+                    <h5 class="text-success">
+
+                        APPROVED
+
+                    </h5>
+
+
+                {% elif corporation_request.status == "Rejected" %}
+
+                    <div style="
+                        font-size:70px;
+                        animation:approvalPulse 2s infinite;
+                    ">
+
+                        ❌
+
+                    </div>
+
+                    <h5 class="text-danger">
+
+                        REJECTED
+
+                    </h5>
+
+
+                {% else %}
+
+                    <div style="
+                        font-size:70px;
+                        animation:approvalPulse 2s infinite;
+                    ">
+
+                        ⏳
+
+                    </div>
+
+                    <h5 class="text-warning">
+
+                        PENDING
+
+                    </h5>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- MESSAGE -->
+
+            <div class="col-md-9">
+
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered">
+
+                        <tr>
+
+                            <th>
+
+                                👤 Owner
+
+                            </th>
+
+                            <td>
+
+                                {{ corporation_request.owner }}
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+
+                                🚘 Vehicle Number
+
+                            </th>
+
+                            <td>
+
+                                <strong class="text-info">
+
+                                    {{ corporation_request.vehicle_number }}
+
+                                </strong>
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+
+                                🅿 Requested Slot
+
+                            </th>
+
+                            <td>
+
+                                <strong class="text-warning">
+
+                                    {{ corporation_request.slot_number }}
+
+                                </strong>
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+
+                                📨 Message
+
+                            </th>
+
+                            <td>
+
+                                {{ corporation_request.message }}
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+
+                                📌 Approval Status
+
+                            </th>
+
+                            <td>
+
+
+                                {% if corporation_request.status == "Approved" %}
+
+                                    <span class="approval-status status-approved">
+
+                                        ✅ Approved
+
+                                    </span>
+
+
+                                {% elif corporation_request.status == "Rejected" %}
+
+                                    <span class="approval-status status-rejected">
+
+                                        ❌ Rejected
+
+                                    </span>
+
+
+                                {% else %}
+
+                                    <span class="approval-status status-pending">
+
+                                        ⏳ Pending
+
+                                    </span>
+
+                                {% endif %}
+
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+
+                                🕒 Request Time
+
+                            </th>
+
+                            <td>
+
+                                {{ corporation_request.created_at }}
+
+                            </td>
+
+                        </tr>
+
+                    </table>
+
+                </div>
+
+
+                {% if corporation_request.status == "Approved" %}
+
+                <div class="alert alert-success">
+
+                    <strong>
+
+                        🎉 Parking Approved!
+
+                    </strong>
+
+                    <br>
+
+                    The corporation has approved your request.
+
+                    You can park your
+
+                    <b>
+
+                        {{ corporation_request.vehicle_number }}
+
+                    </b>
+
+                    in Slot
+
+                    <b>
+
+                        {{ corporation_request.slot_number }}
+
+                    </b>.
+
+                </div>
+
+
+                {% elif corporation_request.status == "Rejected" %}
+
+                <div class="alert alert-danger">
+
+                    <strong>
+
+                        ❌ Parking Request Rejected
+
+                    </strong>
+
+                    <br>
+
+                    Your corporation parking request was rejected.
+
+                    Please select another available slot.
+
+                </div>
+
+
+                {% else %}
+
+                <div class="alert alert-warning">
+
+                    <strong>
+
+                        ⏳ Approval Pending
+
+                    </strong>
+
+                    <br>
+
+                    Your booking request has been sent to the corporation.
+
+                    Please wait for the corporation to approve your parking request.
+
+                </div>
+
+                {% endif %}
+
+
+            </div>
+
+        </div>
+
+
+        {% else %}
+
+
+        <div class="alert alert-info text-center">
+
+            <div style="font-size:55px;">
+
+                📨
+
+            </div>
+
+            <h4>
+
+                No Corporation Request
+
+            </h4>
+
+            <p>
+
+                Book a parking slot to automatically send a request to the corporation.
+
+            </p>
+
+        </div>
+
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================
+     LATEST NOTIFICATIONS
+========================================= -->
+
+<div class="card mt-4">
+
+    <div class="card-body">
+
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <h3 class="mb-0">
+
+                🔔 Latest Notifications
+
+            </h3>
+
+
+            <a href="/notifications"
+               class="btn btn-info btn-sm">
+
+                View All
+
+            </a>
+
+        </div>
+
+
+        {% if notifications %}
+
+
+        <div class="row g-3">
+
+
+            {% for notification in notifications %}
+
+
+            <div class="col-md-6">
+
+
+                <div class="card h-100"
+                     style="
+                     background:rgba(255,255,255,.06) !important;
+                     ">
+
+                    <div class="card-body">
+
+
+                        <div class="d-flex">
+
+                            <div style="
+                                font-size:38px;
+                                margin-right:15px;
+                            ">
+
+                                {% if "Approved" in notification.title %}
+
+                                    ✅
+
+                                {% elif "Rejected" in notification.title %}
+
+                                    ❌
+
+                                {% elif "Parking" in notification.title %}
+
+                                    🅿
+
+                                {% elif "Vehicle" in notification.title %}
+
+                                    🚗
+
+                                {% elif "Theft" in notification.title %}
+
+                                    🚨
+
+                                {% else %}
+
+                                    🔔
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <div>
+
+                                <h5 class="text-info">
+
+                                    {{ notification.title }}
+
+                                </h5>
+
+
+                                <p class="mb-2">
+
+                                    {{ notification.message }}
+
+                                </p>
+
+
+                                <small class="text-secondary">
+
+                                    🕒 {{ notification.created_at }}
+
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            {% endfor %}
+
+        </div>
+
+
+        {% else %}
+
+
+        <div class="alert alert-info text-center">
+
+            <div style="font-size:50px;">
+
+                🔔
+
+            </div>
+
+            <h5>
+
+                No Notifications Available
+
+            </h5>
+
+            <p class="mb-0">
+
+                New parking and corporation notifications will appear here.
+
+            </p>
+
+        </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================
+     NOTIFICATION STATUS CARDS
+========================================= -->
+
+<div class="row mt-4 g-4">
+
+
+    <!-- APPROVAL -->
+
+    <div class="col-md-4">
+
+        <div class="card text-center h-100">
+
+            <div class="card-body">
+
+                <div style="font-size:50px;">
+
+                    🏢
+
+                </div>
+
+                <h5>
+
+                    Corporation
+
+                </h5>
+
+
+                {% if corporation_request %}
+
+                    {% if corporation_request.status == "Approved" %}
+
+                    <h4 class="text-success">
+
+                        APPROVED
+
+                    </h4>
+
+                    {% elif corporation_request.status == "Rejected" %}
+
+                    <h4 class="text-danger">
+
+                        REJECTED
+
+                    </h4>
+
+                    {% else %}
+
+                    <h4 class="text-warning">
+
+                        PENDING
+
+                    </h4>
+
+                    {% endif %}
+
+                {% else %}
+
+                <h4 class="text-secondary">
+
+                    NO REQUEST
+
+                </h4>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- VEHICLE -->
+
+    <div class="col-md-4">
+
+        <div class="card text-center h-100">
+
+            <div class="card-body">
+
+                <div style="font-size:50px;">
+
+                    🚗
+
+                </div>
+
+                <h5>
+
+                    Vehicle Status
+
+                </h5>
+
+
+                {% if vehicle_location %}
+
+                <h4 class="text-success">
+
+                    PARKED
+
+                </h4>
+
+                {% else %}
+
+                <h4 class="text-warning">
+
+                    NOT PARKED
+
+                </h4>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SECURITY -->
+
+    <div class="col-md-4">
+
+        <div class="card text-center h-100">
+
+            <div class="card-body">
+
+                <div style="font-size:50px;">
+
+                    🛡️
+
+                </div>
+
+                <h5>
+
+                    Security
+
+                </h5>
+
+                <h4 class="text-success">
+
+                    PROTECTED
+
+                </h4>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- =========================================
+     THEFT ALERTS
+========================================= -->
+
+<div class="card mt-4">
+
+    <div class="card-body">
+
+        <h3 class="mb-4">
+
+            🚨 Latest Theft Alerts
+
+        </h3>
+
+
+        {% if theft_alerts %}
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            🚘 Vehicle
+                        </th>
+
+                        <th>
+                            🅿 Slot
+                        </th>
+
+                        <th>
+                            🚨 Alert
+                        </th>
+
+                        <th>
+                            📌 Status
+                        </th>
+
+                        <th>
+                            🕒 Time
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for alert in theft_alerts %}
+
+                    <tr>
+
+                        <td>
+
+                            <strong class="text-info">
+
+                                {{ alert.vehicle_number }}
+
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="badge bg-primary">
+
+                                {{ alert.slot_number }}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            {{ alert.alert_message }}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if alert.status == "Safe" %}
+
+                            <span class="approval-status status-approved">
+
+                                ✅ Safe
+
+                            </span>
+
+                            {% elif alert.status == "Pending" %}
+
+                            <span class="approval-status status-pending">
+
+                                ⏳ Pending
+
+                            </span>
+
+                            {% else %}
+
+                            <span class="approval-status status-rejected">
+
+                                🚨 {{ alert.status }}
+
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ alert.alert_time }}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {% else %}
+
+        <div class="alert alert-success text-center">
+
+            <div style="font-size:55px;">
+
+                🛡️
+
+            </div>
+
+            <h4>
+
+                No Theft Alerts
+
+            </h4>
+
+            <p class="mb-0">
+
+                Your vehicle currently has no reported security alerts.
+
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================
+     QUICK ACTION PANEL
+========================================= -->
+
+<div class="card mt-4">
+
+    <div class="card-body text-center">
+
+        <h3 class="mb-4">
+
+            ⚡ Quick Actions
+
+        </h3>
+
+
+        <div class="row g-3">
+
+
+            <div class="col-md-3">
+
+                <a href="/add_vehicle"
+                   class="btn btn-success w-100 action-btn">
+
+                    🚘
+
+                    <br>
+
+                    Add Vehicle
+
+                </a>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <a href="/book_slot"
+                   class="btn btn-warning w-100 action-btn">
+
+                    🅿️
+
+                    <br>
+
+                    Book Slot
+
+                </a>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <a href="/parking_map"
+                   class="btn btn-info w-100 action-btn">
+
+                    🗺️
+
+                    <br>
+
+                    Parking Map
+
+                </a>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <a href="/notifications"
+                   class="btn btn-primary w-100 action-btn">
+
+                    🔔
+
+                    <br>
+
+                    Notifications
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================
+     SYSTEM STATUS
+========================================= -->
+
+<div class="card mt-4">
+
+    <div class="card-body">
+
+        <h3 class="text-center mb-4">
+
+            🛡️ Smart Parking System Status
+
+        </h3>
+
+
+        <div class="row g-4">
+
+
+            <!-- AI -->
+
+            <div class="col-md-4">
+
+                <div class="system-status-card">
+
+                    <div class="status-icon">
+
+                        🤖
+
+                    </div>
+
+                    <h5>
+
+                        AI Parking
+
+                    </h5>
+
+                    <span class="online-status">
+
+                        ● ACTIVE
+
+                    </span>
+
+                    <p>
+
+                        Intelligent parking recommendation is available.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- CORPORATION -->
+
+            <div class="col-md-4">
+
+                <div class="system-status-card">
+
+                    <div class="status-icon">
+
+                        🏢
+
+                    </div>
+
+                    <h5>
+
+                        Corporation Approval
+
+                    </h5>
+
+                    {% if corporation_request %}
+
+                        {% if corporation_request.status == "Approved" %}
+
+                        <span class="online-status">
+
+                            ● APPROVED
+
+                        </span>
+
+                        {% elif corporation_request.status == "Rejected" %}
+
+                        <span class="offline-status">
+
+                            ● REJECTED
+
+                        </span>
+
+                        {% else %}
+
+                        <span class="pending-status">
+
+                            ● PENDING
+
+                        </span>
+
+                        {% endif %}
+
+                    {% else %}
+
+                    <span class="pending-status">
+
+                        ● WAITING
+
+                    </span>
+
+                    {% endif %}
+
+                    <p>
+
+                        Parking requests are reviewed by the corporation.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- SECURITY -->
+
+            <div class="col-md-4">
+
+                <div class="system-status-card">
+
+                    <div class="status-icon">
+
+                        🛡️
+
+                    </div>
+
+                    <h5>
+
+                        Security
+
+                    </h5>
+
+                    <span class="online-status">
+
+                        ● PROTECTED
+
+                    </span>
+
+                    <p>
+
+                        Your parking information is securely managed.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================
+     FINAL MESSAGE
+========================================= -->
+
+<div class="card mt-4">
+
+    <div class="card-body text-center">
+
+        {% if corporation_request %}
+
+            {% if corporation_request.status == "Approved" %}
+
+            <div class="success-animation">
+
+                ✅
+
+            </div>
+
+            <h2 class="text-success">
+
+                Parking Request Approved!
+
+            </h2>
+
+            <p>
+
+                You are authorized to park your vehicle.
+
+            </p>
+
+
+            {% elif corporation_request.status == "Rejected" %}
+
+            <div class="success-animation">
+
+                ❌
+
+            </div>
+
+            <h2 class="text-danger">
+
+                Parking Request Rejected
+
+            </h2>
+
+            <p>
+
+                Please select another available parking slot.
+
+            </p>
+
+
+            {% else %}
+
+            <div class="success-animation">
+
+                ⏳
+
+            </div>
+
+            <h2 class="text-warning">
+
+                Waiting for Corporation Approval
+
+            </h2>
+
+            <p>
+
+                Your parking request has been sent successfully.
+
+            </p>
+
+            {% endif %}
+
+        {% else %}
+
+            <div class="success-animation">
+
+                🚗
+
+            </div>
+
+            <h2 class="text-info">
+
+                Welcome to AI Smart Parking
+
+            </h2>
+
+            <p>
+
+                Book a parking slot to start your smart parking journey.
+
+            </p>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================
+     FOOTER
+========================================= -->
+
+<div class="text-center mt-5 mb-5 footer-section">
+
+    <hr>
+
+    <h5>
+
+        🚗 AI Smart Parking Management System
+
+    </h5>
+
+    <p>
+
+        Developed using Python • Flask • SQLite • AI
+
+    </p>
+
+    <p class="text-secondary">
+
+        Smart • Secure • Intelligent Parking Solution
+
+    </p>
+
+    <p class="small text-secondary">
+
+        © 2026 AI Smart Parking Management System
+
+    </p>
+
+</div>
+
+
+
+<!-- =========================================
+     FLOATING PARTICLES
+========================================= -->
+
+<div class="particle p1"></div>
+
+<div class="particle p2"></div>
+
+<div class="particle p3"></div>
+
+<div class="particle p4"></div>
+
+<div class="particle p5"></div>
+
+
+
+<!-- =========================================
+     EXTRA ANIMATION CSS
+========================================= -->
+
+<style>
+
+/* =========================================
+   APPROVAL STATUS
+========================================= */
+
+.approval-status{
+
+    display:inline-block;
+
+    padding:8px 16px;
+
+    border-radius:25px;
+
+    font-weight:bold;
+
+    font-size:14px;
+
+    animation:statusPulse 2s infinite;
+
+}
+
+
+.status-approved{
+
+    background:rgba(0,255,120,.18);
+
+    color:#00ff88;
+
+    border:1px solid #00ff88;
+
+    box-shadow:0 0 15px rgba(0,255,120,.4);
+
+}
+
+
+.status-pending{
+
+    background:rgba(255,193,7,.18);
+
+    color:#ffc107;
+
+    border:1px solid #ffc107;
+
+    box-shadow:0 0 15px rgba(255,193,7,.4);
+
+}
+
+
+.status-rejected{
+
+    background:rgba(255,50,80,.18);
+
+    color:#ff5065;
+
+    border:1px solid #ff5065;
+
+    box-shadow:0 0 15px rgba(255,50,80,.4);
+
+}
+
+
+@keyframes statusPulse{
+
+    0%{
+
+        transform:scale(1);
+
+    }
+
+    50%{
+
+        transform:scale(1.04);
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+    }
+
+}
+
+
+/* =========================================
+   ACTION BUTTONS
+========================================= */
+
+.action-btn{
+
+    border-radius:20px;
+
+    padding:15px;
+
+    font-weight:bold;
+
+    transition:.4s;
+
+    border:1px solid rgba(255,255,255,.2);
+
+}
+
+
+.action-btn:hover{
+
+    transform:translateY(-6px) scale(1.03);
+
+    box-shadow:0 0 25px rgba(0,255,255,.6);
+
+}
+
+
+/* =========================================
+   SYSTEM STATUS CARD
+========================================= */
+
+.system-status-card{
+
+    background:rgba(255,255,255,.06);
+
+    border:1px solid rgba(0,255,255,.2);
+
+    border-radius:20px;
+
+    padding:25px;
+
+    text-align:center;
+
+    height:100%;
+
+    transition:.4s;
+
+}
+
+
+.system-status-card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:0 0 25px rgba(0,255,255,.35);
+
+}
+
+
+.status-icon{
+
+    font-size:50px;
+
+    margin-bottom:10px;
+
+    animation:iconFloat 3s ease-in-out infinite;
+
+}
+
+
+@keyframes iconFloat{
+
+    0%{
+
+        transform:translateY(0);
+
+    }
+
+    50%{
+
+        transform:translateY(-8px);
+
+    }
+
+    100%{
+
+        transform:translateY(0);
+
+    }
+
+}
+
+
+.online-status{
+
+    color:#00ff88;
+
+    font-weight:bold;
+
+}
+
+
+.pending-status{
+
+    color:#ffc107;
+
+    font-weight:bold;
+
+}
+
+
+.offline-status{
+
+    color:#ff5065;
+
+    font-weight:bold;
+
+}
+
+
+.system-status-card p{
+
+    color:#cbd5e1;
+
+    margin-top:12px;
+
+}
+
+
+/* =========================================
+   FINAL ANIMATION
+========================================= */
+
+.success-animation{
+
+    font-size:70px;
+
+    animation:successPulse 2s infinite;
+
+}
+
+
+@keyframes successPulse{
+
+    0%{
+
+        transform:scale(1);
+
+        filter:drop-shadow(0 0 5px cyan);
+
+    }
+
+    50%{
+
+        transform:scale(1.15);
+
+        filter:drop-shadow(0 0 25px cyan);
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+        filter:drop-shadow(0 0 5px cyan);
+
+    }
+
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.footer-section{
+
+    color:white;
+
+    padding:20px;
+
+}
+
+
+.footer-section h5{
+
+    color:#00ffff;
+
+    text-shadow:0 0 10px cyan;
+
+}
+
+
+/* =========================================
+   FLOATING PARTICLES
+========================================= */
+
+.particle{
+
+    position:fixed;
+
+    width:7px;
+
+    height:7px;
+
+    border-radius:50%;
+
+    background:#00ffff;
+
+    opacity:.7;
+
+    z-index:-1;
+
+    animation:particleFloat 12s linear infinite;
+
+}
+
+
+.p1{
+
+    left:10%;
+
+    animation-delay:0s;
+
+}
+
+
+.p2{
+
+    left:30%;
+
+    animation-delay:2s;
+
+}
+
+
+.p3{
+
+    left:50%;
+
+    animation-delay:4s;
+
+}
+
+
+.p4{
+
+    left:70%;
+
+    animation-delay:6s;
+
+}
+
+
+.p5{
+
+    left:90%;
+
+    animation-delay:8s;
+
+}
+
+
+@keyframes particleFloat{
+
+    0%{
+
+        bottom:-20px;
+
+        opacity:0;
+
+    }
+
+    20%{
+
+        opacity:.8;
+
+    }
+
+    80%{
+
+        opacity:.8;
+
+    }
+
+    100%{
+
+        bottom:110%;
+
+        opacity:0;
+
+    }
+
+}
+
+
+/* =========================================
+   TABLE ANIMATION
+========================================= */
+
+.table tbody tr{
+
+    transition:.3s;
+
+}
+
+
+.table tbody tr:hover{
+
+    transform:scale(1.01);
+
+    background:rgba(0,255,255,.08);
+
+}
+
+
+/* =========================================
+   RESPONSIVE DESIGN
+========================================= */
+
+@media(max-width:768px){
+
+    .approval-status{
+
+        font-size:12px;
+
+        padding:6px 10px;
+
+    }
+
+
+    .system-status-card{
+
+        margin-bottom:10px;
+
+    }
+
+
+    .action-btn{
+
+        padding:12px;
+
+    }
+
+}
+
+</style>
+
+
+
+<!-- =========================================
+     AUTO REFRESH FOR APPROVAL STATUS
+========================================= -->
+
+<script>
+
+function refreshApprovalStatus(){
+
+    /*
+       Refresh the dashboard periodically so that
+       a corporation approval/rejection becomes visible
+       without manually refreshing the page.
+    */
+
+    const approvalElement =
+        document.querySelector(".status-approved, .status-pending, .status-rejected");
+
+    if(approvalElement){
+
+        /*
+           Reload after 30 seconds.
+           The server will provide the latest
+           corporation approval status.
+        */
+
+        setTimeout(function(){
+
+            location.reload();
+
+        },30000);
+
+    }
+
+}
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    refreshApprovalStatus
+);
+
+</script>
+
+
+
+</div>
+
+<!-- MAIN CONTAINER END -->
+
+</body>
+
+</html>

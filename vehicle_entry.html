@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Vehicle Entry - Smart Parking</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px 20px 0 0 !important;
+            padding: 25px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 10px;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="row justify-content-center align-items-center"
+         style="min-height: 100vh;">
+
+        <div class="col-md-8 col-lg-6">
+
+            <div class="card">
+
+                <!-- HEADER -->
+                <div class="card-header text-center">
+
+                    <h2>
+                        <i class="fas fa-car-side"></i>
+                        Vehicle Entry
+                    </h2>
+
+                    <p class="mb-0">
+                        Record your vehicle entry into the parking area
+                    </p>
+
+                </div>
+
+                <!-- BODY -->
+                <div class="card-body p-4">
+
+                    <!-- ERROR MESSAGE -->
+                    {% if error %}
+                    <div class="alert alert-danger alert-dismissible fade show"
+                         role="alert">
+
+                        <i class="fas fa-exclamation-circle"></i>
+                        {{ error }}
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert">
+                        </button>
+
+                    </div>
+                    {% endif %}
+
+
+                    <!-- SUCCESS MESSAGE -->
+                    {% if success %}
+                    <div class="alert alert-success alert-dismissible fade show"
+                         role="alert">
+
+                        <i class="fas fa-check-circle"></i>
+                        {{ success }}
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert">
+                        </button>
+
+                    </div>
+                    {% endif %}
+
+
+                    <!-- VEHICLE ENTRY FORM -->
+
+                    <form method="POST"
+                          action="{{ url_for('vehicle_entry') }}">
+
+                        <!-- CSRF TOKEN -->
+                        <input type="hidden"
+                               name="csrf_token"
+                               value="{{ csrf_token() }}">
+
+
+                        <!-- VEHICLE NUMBER -->
+                        <div class="mb-3">
+
+                            <label for="vehicle_number"
+                                   class="form-label">
+
+                                <i class="fas fa-car"></i>
+                                Vehicle Number
+
+                            </label>
+
+                            <select class="form-select"
+                                    id="vehicle_number"
+                                    name="vehicle_number"
+                                    required>
+
+                                <option value="">
+                                    Select your vehicle
+                                </option>
+
+                                {% for vehicle in vehicles %}
+
+                                <option value="{{ vehicle.vehicle_number }}">
+
+                                    {{ vehicle.vehicle_number }}
+                                    ({{ vehicle.vehicle_type }})
+
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- VEHICLE TYPE -->
+                        <div class="mb-3">
+
+                            <label for="vehicle_type"
+                                   class="form-label">
+
+                                <i class="fas fa-tag"></i>
+                                Vehicle Type
+
+                            </label>
+
+                            <select class="form-select"
+                                    id="vehicle_type"
+                                    name="vehicle_type">
+
+                                <option value="Car">
+                                    Car
+                                </option>
+
+                                <option value="Bike">
+                                    Bike
+                                </option>
+
+                                <option value="Truck">
+                                    Truck
+                                </option>
+
+                                <option value="SUV">
+                                    SUV
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- PARKING SLOT -->
+                        <div class="mb-3">
+
+                            <label for="slot_number"
+                                   class="form-label">
+
+                                <i class="fas fa-parking"></i>
+                                Parking Slot
+
+                            </label>
+
+                            <select class="form-select"
+                                    id="slot_number"
+                                    name="slot_number">
+
+                                <option value="">
+                                    Auto-assign available slot
+                                </option>
+
+                                {% for slot in available_slots %}
+
+                                <option value="{{ slot.slot_number }}">
+
+                                    {{ slot.slot_number }}
+
+                                    ({{ slot.parking_area.name
+                                    if slot.parking_area
+                                    else 'N/A' }})
+
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                            <small class="text-muted">
+                                Leave empty for automatic slot assignment
+                            </small>
+
+                        </div>
+
+
+                        <!-- BUTTONS -->
+                        <div class="d-grid gap-2">
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+
+                                <i class="fas fa-sign-in-alt"></i>
+
+                                Record Entry
+
+                            </button>
+
+
+                            <a href="{{ url_for('dashboard') }}"
+                               class="btn btn-secondary">
+
+                                <i class="fas fa-arrow-left"></i>
+
+                                Back to Dashboard
+
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- BOOTSTRAP JAVASCRIPT -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+</script>
+
+</body>
+</html>

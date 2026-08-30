@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+<title>AI Smart Parking Live Map - Real-time</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI,Arial,sans-serif;
+}
+
+body{
+background:#0f172a;
+color:white;
+min-height:100vh;
+overflow-x:hidden;
+}
+
+#bg-canvas{
+position:fixed;
+width:100%;
+height:100%;
+top:0;
+left:0;
+z-index:-1;
+}
+
+.container{
+width:92%;
+max-width:1400px;
+margin:auto;
+padding:20px;
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:rgba(30,41,59,.92);
+padding:18px 25px;
+border-radius:18px;
+margin-bottom:20px;
+border:1px solid rgba(255,255,255,.1);
+}
+
+header h1{
+font-size:24px;
+color:#60a5fa;
+}
+
+.btn{
+background:#2563eb;
+color:white;
+padding:10px 18px;
+border-radius:10px;
+text-decoration:none;
+transition:.3s;
+}
+
+.btn:hover{
+background:#1d4ed8;
+}
+
+/* Real-time Status Bar */
+.status-bar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:rgba(30,41,59,.9);
+padding:12px 20px;
+border-radius:15px;
+margin-bottom:20px;
+border:1px solid rgba(255,255,255,.1);
+}
+
+.status-item{
+display:flex;
+align-items:center;
+gap:8px;
+font-size:14px;
+}
+
+.status-indicator{
+width:10px;
+height:10px;
+border-radius:50%;
+animation:pulse 2s infinite;
+}
+
+.connected{background:#10b981;}
+.disconnected{background:#ef4444;}
+.connecting{background:#f59e0b;}
+
+@keyframes pulse{
+0%,100%{opacity:1;}
+50%{opacity:0.5;}
+}
+
+.legend{
+display:flex;
+gap:25px;
+flex-wrap:wrap;
+background:rgba(30,41,59,.9);
+padding:15px 20px;
+border-radius:15px;
+margin-bottom:20px;
+}
+
+.legend div{
+display:flex;
+align-items:center;
+gap:8px;
+font-size:14px;
+}
+
+.dot{
+width:13px;
+height:13px;
+border-radius:50%;
+}
+
+.green{background:#10b981;}
+.orange{background:#f59e0b;}
+.red{background:#ef4444;}
+.blue{background:#3b82f6;}
+.gray{background:#6b7280;}
+
+.map-card{
+background:rgba(30,41,59,.92);
+padding:18px;
+border-radius:18px;
+border:1px solid rgba(255,255,255,.1);
+}
+
+#map{
+height:600px;
+width:100%;
+border-radius:14px;
+}
+
+.popup{
+color:#111827;
+min-width:220px;
+}
+
+.popup h3{
+margin-bottom:8px;
+color:#2563eb;
+}
+
+.popup p{
+margin:5px 0;
+font-size:14px;
+}
+
+.available{
+color:#059669;
+font-weight:bold;
+}
+
+.full{
+color:#dc2626;
+font-weight:bold;
+}
+
+.low{
+color:#d97706;
+font-weight:bold;
+}
+
+.ai-box{
+position:fixed;
+right:25px;
+bottom:25px;
+width:340px;
+background:#111827;
+border-radius:18px;
+box-shadow:0 10px 30px rgba(0,0,0,.5);
+overflow:hidden;
+border:1px solid rgba(255,255,255,.1);
+}
+
+.ai-header{
+background:linear-gradient(135deg,#2563eb,#1d4ed8);
+padding:13px;
+font-weight:bold;
+display:flex;
+justify-content:space-between;
+}
+
+.ai-body{
+padding:12px;
+}
+
+#ai-response{
+background:#1f2937;
+padding:12px;
+border-radius:10px;
+font-size:14px;
+min-height:60px;
+margin-bottom:10px;
+}
+
+.quick{
+display:flex;
+gap:6px;
+flex-wrap:wrap;
+margin-bottom:10px;
+}
+
+.quick button{
+background:#374151;
+border:none;
+color:#e5e7eb;
+padding:6px 10px;
+border-radius:15px;
+font-size:12px;
+cursor:pointer;
+}
+
+.input-row{
+display:flex;
+gap:6px;
+}
+
+.input-row input{
+flex:1;
+padding:9px;
+border-radius:8px;
+border:none;
+outline:none;
+}
+
+.input-row button{
+width:42px;
+border:none;
+border-radius:8px;
+background:#2563eb;
+color:white;
+cursor:pointer;
+}
+
+@media(max-width:700px){
+
+header{
+flex-direction:column;
+gap:12px;
+}
+
+.status-bar{
+flex-direction:column;
+gap:10px;
+}
+
+#map{
+height:500px;
+}
+
+.ai-box{
+width:92%;
+right:4%;
+}
+
+}
+
+</style>
+
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div class="container">
+
+<header>
+
+<h1>
+<i class="fa-solid fa-map-location-dot"></i>
+AI Smart Parking Live Map
+</h1>
+
+<a href="/dashboard" class="btn">
+<i class="fa-solid fa-arrow-left"></i>
+Dashboard
+</a>
+
+</header>
+
+<!-- Real-time Status Bar -->
+<div class="status-bar">
+
+<div class="status-item">
+<div id="connection-indicator" class="status-indicator connecting"></div>
+<span id="connection-status">Connecting to real-time server...</span>
+</div>
+
+<div class="status-item">
+<i class="fa-solid fa-clock"></i>
+<span id="last-updated">Last updated: --</span>
+</div>
+
+<div class="status-item">
+<i class="fa-solid fa-users"></i>
+<span id="connected-clients">Connected: 0</span>
+</div>
+
+<div class="status-item">
+<i class="fa-solid fa-bolt"></i>
+<span>Real-time via Socket.IO</span>
+</div>
+
+</div>
+
+<div class="legend">
+
+<div>
+<span class="dot green"></span>
+Good Availability
+</div>
+
+<div>
+<span class="dot orange"></span>
+Limited Parking
+</div>
+
+<div>
+<span class="dot red"></span>
+Full Parking
+</div>
+
+<div>
+<span class="dot blue"></span>
+Main Entrance
+</div>
+
+<div>
+<span class="dot gray"></span>
+No Slots
+</div>
+
+</div>
+
+<div class="map-card">
+
+<div id="map"></div>
+
+</div>
+
+</div>
+
+
+<div class="ai-box">
+
+<div class="ai-header">
+
+<span>
+<i class="fa-solid fa-robot"></i>
+AI Assistant
+</span>
+
+<i class="fa-solid fa-sparkles"></i>
+
+</div>
+
+<div class="ai-body">
+
+<div id="ai-response">
+
+Hello! Ask me to find parking or locate your vehicle.
+
+</div>
+
+<div class="quick">
+
+<button onclick="quick('Find closest parking')">
+Closest
+</button>
+
+<button onclick="quick('Find available parking')">
+Available
+</button>
+
+<button onclick="quick('Find slot with CCTV')">
+CCTV
+</button>
+
+<button onclick="quick('Where is my vehicle?')">
+My Vehicle
+</button>
+
+</div>
+
+<div class="input-row">
+
+<input
+type="text"
+id="query"
+placeholder="Ask AI..."
+onkeypress="enter(event)"
+>
+
+<button onclick="askAI()">
+
+<i class="fa-solid fa-paper-plane"></i>
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+
+<script id="parking-data-json" type="application/json">
+{{ areas_data | tojson }}
+</script>
+<script>
+
+let areasData=[];
+
+try{
+
+const element=document.getElementById("parking-data-json");
+
+areasData=JSON.parse(element.textContent);
+
+console.log("Parking Areas:",areasData);
+
+}catch(err){
+
+console.error("JSON Error",err);
+
+areasData=[];
+
+}
+
+
+// Initialize Socket.IO connection
+function initSocketConnection(){
+socket=io('http://localhost:5001',{
+transports:['websocket','polling'],
+reconnection:true,
+reconnectionAttempts:5,
+reconnectionDelay:1000
+});
+
+socket.on('connect',()=>{
+console.log('✅ Connected to real-time server');
+isConnected=true;
+updateConnectionStatus('connected');
+});
+
+socket.on('disconnect',()=>{
+console.log('❌ Disconnected from real-time server');
+isConnected=false;
+updateConnectionStatus('disconnected');
+});
+
+socket.on('reconnect',()=>{
+console.log('🔄 Reconnected to real-time server');
+isConnected=true;
+updateConnectionStatus('connected');
+});
+
+socket.on('parking_update',(data)=>{
+console.log('📡 Parking update received:',data);
+updateParkingData(data.areas);
+updateLastUpdated(data.timestamp);
+updateConnectedClients(data.connected_clients);
+});
+
+socket.on('connect_error',(error)=>{
+console.error('❌ Socket connection error:',error);
+updateConnectionStatus('disconnected');
+});
+}
+
+function updateConnectionStatus(status){
+const indicator=document.getElementById('connection-indicator');
+const statusText=document.getElementById('connection-status');
+
+indicator.className='status-indicator '+status;
+
+switch(status){
+case 'connected':
+statusText.textContent='✅ Connected to real-time server';
+break;
+case 'disconnected':
+statusText.textContent='❌ Disconnected from real-time server';
+break;
+case 'connecting':
+statusText.textContent='⏳ Connecting to real-time server...';
+break;
+}
+}
+
+function updateLastUpdated(timestamp){
+const lastUpdated=document.getElementById('last-updated');
+if(timestamp){
+const date=new Date(timestamp);
+lastUpdated.textContent='Last updated: '+date.toLocaleTimeString();
+}
+}
+
+function updateConnectedClients(count){
+const clientsElement=document.getElementById('connected-clients');
+clientsElement.textContent='Connected: '+count;
+}
+
+function updateParkingData(newAreasData){
+console.log('Updating parking data on map...');
+areasData=newAreasData;
+
+// Update existing markers or create new ones
+newAreasData.forEach(area=>{
+const marker=markerMap[String(area.id)];
+if(marker){
+// Update existing marker
+const color=getMarkerColor(area.marker_color);
+const newIcon=icon(color,"fa-solid fa-square-parking");
+marker.setIcon(newIcon);
+
+// Update popup content
+const popupContent=createPopupContent(area);
+marker.setPopupContent(popupContent);
+}
+});
+}
+
+function getMarkerColor(colorName){
+switch(colorName){
+case 'green':return '#10b981';
+case 'orange':return '#f59e0b';
+case 'red':return '#ef4444';
+case 'gray':return '#6b7280';
+default:return '#10b981';
+}
+}
+
+function createPopupContent(area){
+let statusClass="available";
+if(area.available_slots===0){
+statusClass="full";
+}else if(area.available_slots<area.total_slots*0.3){
+statusClass="low";
+}
+
+return `
+<div class="popup">
+<h3>
+<i class="fa-solid fa-square-parking"></i>
+${area.name}
+</h3>
+<p>
+<i class="fa-solid fa-location-dot"></i>
+${area.address}
+</p>
+<p>
+Area:
+${area.area_name}
+</p>
+<hr>
+<p>
+Total Slots:
+<b>${area.total_slots}</b>
+</p>
+<p>
+Available:
+<span class="${statusClass}">
+${area.available_slots}
+</span>
+</p>
+<p>
+Occupied:
+<b>${area.occupied_slots}</b>
+</p>
+<p>
+Parking Type:
+${area.parking_type}
+</p>
+<br>
+<a
+href="/book_slot?area=${area.id}"
+style="
+display:block;
+background:#2563eb;
+color:white;
+text-align:center;
+padding:8px;
+border-radius:8px;
+text-decoration:none;
+">
+Book Slot
+</a>
+</div>`;
+}
+
+const centerLat=15.8497;
+const centerLng=74.4977;
+
+const map=L.map("map").setView(
+[centerLat,centerLng],
+14
+);
+
+L.tileLayer(
+"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+{
+attribution:"© OpenStreetMap contributors",
+maxZoom:19
+}
+).addTo(map);
+
+
+function icon(color,fa){
+
+return L.divIcon({
+
+className:"",
+
+html:`
+<div style="
+background:${color};
+width:38px;
+height:38px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+font-size:18px;
+border:3px solid white;
+box-shadow:0 0 15px ${color};
+">
+
+<i class="${fa}"></i>
+
+</div>`,
+
+iconSize:[38,38],
+iconAnchor:[19,19]
+
+});
+
+}
+
+
+const markerMap={};
+
+
+function slotIcon(slot, index){
+    const isOccupied = slot.status === "Occupied";
+    const hasVehicle = slot.vehicle_info !== null;
+    
+    let iconHtml = "";
+    let iconColor = isOccupied ? "#ef4444" : "#10b981";
+    let iconSize = 32;
+    
+    if (isOccupied && hasVehicle) {
+        const vehicleType = slot.vehicle_info.vehicle_type.toLowerCase();
+        const isCar = vehicleType === "car" || vehicleType === "suv" || vehicleType === "truck";
+        const isBike = vehicleType === "bike" || vehicleType === "motorcycle";
+        
+        const vehicleIcon = isCar ? "fa-solid fa-car" : (isBike ? "fa-solid fa-motorcycle" : "fa-solid fa-car");
+        
+        iconHtml = `
+        <div style="
+            background:${iconColor};
+            width:45px;
+            height:45px;
+            border-radius:8px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            color:white;
+            font-size:20px;
+            border:3px solid white;
+            box-shadow:0 0 15px ${iconColor};
+            position:relative;
+        ">
+            <i class="${vehicleIcon}"></i>
+            <div style="
+                position:absolute;
+                bottom:-15px;
+                left:50%;
+                transform:translateX(-50%);
+                background:#2563eb;
+                color:white;
+                font-size:8px;
+                padding:2px 4px;
+                border-radius:3px;
+                white-space:nowrap;
+                font-weight:bold;
+            ">
+                ${slot.vehicle_info.vehicle_number}
+            </div>
+        </div>`;
+        iconSize = 45;
+    } else {
+        iconHtml = `
+        <div style="
+            background:${iconColor};
+            width:35px;
+            height:35px;
+            border-radius:4px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            color:white;
+            font-size:12px;
+            border:2px solid white;
+            box-shadow:0 0 10px ${iconColor};
+        ">
+            <span style="font-weight:bold;">${slot.slot_number}</span>
+        </div>`;
+        iconSize = 35;
+    }
+    
+    return L.divIcon({
+        className:"",
+        html:iconHtml,
+        iconSize:[iconSize, iconSize],
+        iconAnchor:[iconSize/2, iconSize/2]
+    });
+}
+
+function vehiclePopup(slot){
+    if (slot.status === "Occupied" && slot.vehicle_info) {
+        return `
+        <div class="popup">
+            <h3><i class="fa-solid fa-car"></i> ${slot.slot_number}</h3>
+            <p><strong>Vehicle:</strong> ${slot.vehicle_info.vehicle_number}</p>
+            <p><strong>Type:</strong> ${slot.vehicle_info.vehicle_type}</p>
+            <p><strong>Color:</strong> ${slot.vehicle_info.color}</p>
+            <p><strong>Owner:</strong> ${slot.owner}</p>
+            <p><strong>Status:</strong> <span class="full">Occupied</span></p>
+            ${slot.cctv ? '<p><i class="fa-solid fa-video"></i> CCTV Available</p>' : ''}
+            ${slot.lighting ? '<p><i class="fa-solid fa-lightbulb"></i> Well Lit</p>' : ''}
+        </div>`;
+    } else {
+        return `
+        <div class="popup">
+            <h3><i class="fa-solid fa-square-parking"></i> ${slot.slot_number}</h3>
+            <p><strong>Status:</strong> <span class="available">Available</span></p>
+            ${slot.cctv ? '<p><i class="fa-solid fa-video"></i> CCTV Available</p>' : ''}
+            ${slot.lighting ? '<p><i class="fa-solid fa-lightbulb"></i> Well Lit</p>' : ''}
+        </div>`;
+    }
+}
+
+
+L.marker(
+[centerLat,centerLng],
+{
+icon:icon("#3b82f6","fa-solid fa-door-open")
+}
+)
+.addTo(map)
+.bindPopup(`
+<div class="popup">
+
+<h3>Main Entrance</h3>
+
+<p>Smart Parking Entry Gate</p>
+
+</div>
+`);
+
+
+areasData.forEach(area=>{
+
+let color="#10b981";
+let statusClass="available";
+
+if(area.available_slots===0){
+
+color="#ef4444";
+statusClass="full";
+
+}
+else if(area.available_slots<area.total_slots*0.3){
+
+color="#f59e0b";
+statusClass="low";
+
+}
+
+const popup=createPopupContent(area);
+
+const marker=L.marker(
+[area.lat,area.lng],
+{
+icon:icon(color,"fa-solid fa-square-parking")
+}
+)
+.addTo(map)
+.bindPopup(popup);
+
+markerMap[String(area.id)]=marker;
+
+// Add individual parking slot markers
+if (area.slots && area.slots.length > 0) {
+    area.slots.forEach((slot, index) => {
+        const slotMarker = L.marker(
+            [slot.lat, slot.lng],
+            {
+                icon: slotIcon(slot, index)
+            }
+        )
+        .addTo(map)
+        .bindPopup(vehiclePopup(slot));
+        
+        markerMap[`slot_${area.id}_${slot.slot_number}`] = slotMarker;
+    });
+}
+
+});
+
+
+if(areasData.length>0){
+
+const bounds=[];
+
+areasData.forEach(a=>{
+bounds.push([a.lat,a.lng]);
+});
+
+bounds.push([centerLat,centerLng]);
+
+map.fitBounds(bounds,{
+padding:[40,40]
+});
+
+}
+
+
+map.locate({
+setView:false,
+enableHighAccuracy:true
+});
+
+
+map.on("locationfound",function(e){
+
+L.circleMarker(
+e.latlng,
+{
+radius:9,
+color:"#2563eb",
+fillColor:"#60a5fa",
+fillOpacity:1
+}
+)
+.addTo(map)
+.bindPopup("You are here");
+
+});
+
+
+map.on("locationerror",function(){
+
+console.log("Location permission denied");
+
+});
+
+// Initialize Socket.IO connection
+initSocketConnection();
+
+
+</script>`}
+<script>
+
+async function askAI(){
+
+const q=document.getElementById("query").value.trim();
+
+if(!q)return;
+
+document.getElementById("ai-response").innerHTML=
+'<i class="fa-solid fa-spinner fa-spin"></i> Thinking...';
+
+try{
+
+const token=document.querySelector(
+'meta[name="csrf-token"]'
+).content;
+
+const response=await fetch(
+"/api/ai_assistant",
+{
+method:"POST",
+
+headers:{
+"Content-Type":"application/json",
+"X-CSRFToken":token
+},
+
+body:JSON.stringify({
+query:q
+})
+
+}
+);
+
+const data=await response.json();
+
+document.getElementById("ai-response").innerText=data.reply;
+
+document.getElementById("query").value="";
+
+if(data.target_slot){
+
+const marker=markerMap[String(data.target_slot)];
+
+if(marker){
+
+map.flyTo(
+marker.getLatLng(),
+17,
+{
+animate:true,
+duration:1.5
+}
+);
+
+setTimeout(()=>{
+marker.openPopup();
+},1500);
+
+}
+
+}
+
+}catch(err){
+
+document.getElementById("ai-response").innerText=
+"Unable to process AI request.";
+
+}
+
+}
+
+
+function quick(text){
+
+document.getElementById("query").value=text;
+
+askAI();
+
+}
+
+
+function enter(e){
+
+if(e.key==="Enter"){
+
+askAI();
+
+}
+
+}
+
+
+const canvas=document.getElementById("bg-canvas");
+
+const ctx=canvas.getContext("2d");
+
+let particles=[];
+
+function resize(){
+
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+}
+
+resize();
+
+window.addEventListener("resize",resize);
+
+
+class Particle{
+
+constructor(){
+
+this.reset();
+
+}
+
+reset(){
+
+this.x=Math.random()*canvas.width;
+this.y=Math.random()*canvas.height;
+
+this.vx=(Math.random()-.5)*.5;
+this.vy=(Math.random()-.5)*.5;
+
+this.r=Math.random()*2+1;
+
+}
+
+move(){
+
+this.x+=this.vx;
+this.y+=this.vy;
+
+if(
+this.x<0||
+this.x>canvas.width||
+this.y<0||
+this.y>canvas.height
+){
+
+this.reset();
+
+}
+
+}
+
+draw(){
+
+ctx.beginPath();
+
+ctx.arc(
+this.x,
+this.y,
+this.r,
+0,
+Math.PI*2
+);
+
+ctx.fillStyle="rgba(96,165,250,.35)";
+
+ctx.fill();
+
+}
+
+}
+
+
+for(let i=0;i<70;i++){
+
+particles.push(new Particle());
+
+}
+
+
+function animate(){
+
+ctx.clearRect(
+0,
+0,
+canvas.width,
+canvas.height
+);
+
+particles.forEach(p=>{
+
+p.move();
+p.draw();
+
+});
+
+requestAnimationFrame(animate);
+
+}
+
+animate();
+
+</script>
+
+</body>
+</html>
