@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .section-title {
+            color: #00ffff;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+        }
+
+        .btn-action {
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .table {
+            color: white;
+        }
+
+        .table thead th {
+            background: rgba(0, 255, 255, 0.1);
+            color: #00ffff;
+            border-color: rgba(0, 255, 255, 0.2);
+        }
+
+        .table tbody td {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .table tbody tr:hover {
+            background: rgba(0, 255, 255, 0.05);
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: rgba(0, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(0, 255, 255, 0.1);
+        }
+
+        .summary-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00ffff;
+        }
+
+        .summary-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .status-inside {
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff;
+            border: 1px solid #00ffff;
+        }
+
+        .status-exited {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid #00ff88;
+        }
+
+        @media (max-width: 768px) {
+            .summary-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .btn-action {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 style="color: #00ffff; font-weight: bold; margin-bottom: 5px;">
+                        <i class="fas fa-file-alt"></i> System Reports
+                    </h1>
+                    <p style="color: #94a3b8; margin: 0;">Comprehensive parking system reports and data</p>
+                </div>
+                <div>
+                    <a href="/admin" class="back-btn">
+                        <i class="fas fa-arrow-left"></i> Back to Admin
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Statistics -->
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="summary-value">{{ users|length }}</div>
+                <div class="summary-label">Total Users</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value">{{ vehicles|length }}</div>
+                <div class="summary-label">Total Vehicles</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value">{{ parking_areas|length }}</div>
+                <div class="summary-label">Parking Areas</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value">{{ parking_records|length }}</div>
+                <div class="summary-label">Parking Records</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value" style="color: #00ff88;">₹{{ total_revenue }}</div>
+                <div class="summary-label">Total Revenue</div>
+            </div>
+        </div>
+
+        <!-- Users Report -->
+        <div class="card">
+            <h3 class="section-title"><i class="fas fa-users"></i> Users Report</h3>
+            
+            {% if users %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Admin</th>
+                            <th>Failed Attempts</th>
+                            <th>Account Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td><strong>{{ user.name }}</strong></td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.phone or 'N/A' }}</td>
+                            <td>
+                                {% if user.is_admin %}
+                                <span style="color: #00ff88;"><i class="fas fa-check-circle"></i></span>
+                                {% else %}
+                                <span style="color: #64748b;"><i class="fas fa-times-circle"></i></span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.failed_login_attempts }}</td>
+                            <td>
+                                {% if user.account_locked %}
+                                <span style="color: #ff5065;">Locked</span>
+                                {% else %}
+                                <span style="color: #00ff88;">Active</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <p style="color: #64748b;">No users found in the system.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Vehicles Report -->
+        <div class="card">
+            <h3 class="section-title"><i class="fas fa-car"></i> Vehicles Report</h3>
+            
+            {% if vehicles %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Owner</th>
+                            <th>Vehicle Number</th>
+                            <th>Vehicle Type</th>
+                            <th>Color</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vehicle in vehicles %}
+                        <tr>
+                            <td>{{ vehicle.id }}</td>
+                            <td>{{ vehicle.owner }}</td>
+                            <td><strong>{{ vehicle.vehicle_number }}</strong></td>
+                            <td>{{ vehicle.vehicle_type }}</td>
+                            <td>{{ vehicle.color }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <p style="color: #64748b;">No vehicles registered in the system.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Parking Records Report -->
+        <div class="card">
+            <h3 class="section-title"><i class="fas fa-clipboard-list"></i> Parking Records Report</h3>
+            
+            {% if parking_records %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Owner</th>
+                            <th>Vehicle</th>
+                            <th>Slot</th>
+                            <th>Entry Time</th>
+                            <th>Exit Time</th>
+                            <th>Status</th>
+                            <th>Parking Fee</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in parking_records %}
+                        <tr>
+                            <td>{{ record.id }}</td>
+                            <td>{{ record.owner }}</td>
+                            <td><strong>{{ record.vehicle_number }}</strong></td>
+                            <td>{{ record.slot_number }}</td>
+                            <td>{{ record.entry_time.strftime('%Y-%m-%d %H:%M') if record.entry_time else 'N/A' }}</td>
+                            <td>{{ record.exit_time.strftime('%Y-%m-%d %H:%M') if record.exit_time else 'N/A' }}</td>
+                            <td>
+                                <span class="status-badge {% if record.status == 'Inside' %}status-inside{% else %}status-exited{% endif %}">
+                                    {{ record.status }}
+                                </span>
+                            </td>
+                            <td style="color: #00ff88;">₹{{ record.parking_fee if record.parking_fee else 0 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <p style="color: #64748b;">No parking records found in the system.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Parking Areas Report -->
+        <div class="card">
+            <h3 class="section-title"><i class="fas fa-building"></i> Parking Areas Report</h3>
+            
+            {% if parking_areas %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Area</th>
+                            <th>Address</th>
+                            <th>Total Slots</th>
+                            <th>Available</th>
+                            <th>Occupied</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for area in parking_areas %}
+                        <tr>
+                            <td>{{ area.id }}</td>
+                            <td><strong>{{ area.name }}</strong></td>
+                            <td>{{ area.area_name }}</td>
+                            <td>{{ area.address }}</td>
+                            <td>{{ area.total_slots }}</td>
+                            <td style="color: #00ff88;">{{ area.available_slots }}</td>
+                            <td style="color: #ff5065;">{{ area.occupied_slots }}</td>
+                            <td>{{ area.parking_type }}</td>
+                            <td>
+                                {% if area.status == 'Active' %}
+                                <span style="color: #00ff88;">Active</span>
+                                {% else %}
+                                <span style="color: #ff5065;">Inactive</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <p style="color: #64748b;">No parking areas found in the system.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Export Options -->
+        <div class="card">
+            <h3 class="section-title"><i class="fas fa-download"></i> Export Reports</h3>
+            
+            <div class="d-flex gap-3 flex-wrap">
+                <button class="btn-action btn-primary" onclick="exportReport('users')">
+                    <i class="fas fa-users"></i> Export Users
+                </button>
+                <button class="btn-action btn-primary" onclick="exportReport('vehicles')">
+                    <i class="fas fa-car"></i> Export Vehicles
+                </button>
+                <button class="btn-action btn-primary" onclick="exportReport('records')">
+                    <i class="fas fa-clipboard-list"></i> Export Records
+                </button>
+                <button class="btn-action btn-success" onclick="exportReport('all')">
+                    <i class="fas fa-file-export"></i> Export All Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function exportReport(type) {
+            // This is a placeholder for export functionality
+            // In a real implementation, this would generate CSV/PDF reports
+            alert(`Exporting ${type} report... (Feature to be implemented)`);
+        }
+    </script>
+</body>
+</html>

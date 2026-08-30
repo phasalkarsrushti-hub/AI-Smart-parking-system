@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Details - AI Smart Parking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .details-card {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            color: #00ffff;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-item {
+            background: rgba(0, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 255, 255, 0.1);
+        }
+
+        .info-label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .info-value {
+            color: #00ffff;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .slot-item {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .slot-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .slot-available {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .slot-occupied {
+            border-color: #ff5065;
+            background: rgba(255, 60, 80, 0.1);
+            cursor: not-allowed;
+        }
+
+        .slot-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .slot-status {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+
+        .status-available {
+            background: #00ff88;
+            color: #001f0d;
+        }
+
+        .status-occupied {
+            background: #ff5065;
+            color: white;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+
+        .btn-action {
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            color: white;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .vehicle-selection {
+            background: rgba(0, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0, 255, 255, 0.1);
+        }
+
+        .form-select {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: white;
+        }
+
+        .form-select:focus {
+            background: rgba(0, 255, 255, 0.15);
+            border-color: #00ffff;
+            color: white;
+            box-shadow: 0 0 0 0.2rem rgba(0, 255, 255, 0.25);
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .slots-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-action {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 style="color: #00ffff; font-weight: bold; margin-bottom: 5px;">
+                        <i class="fas fa-parking"></i> {{ parking_area.name }}
+                    </h1>
+                    <p style="color: #94a3b8; margin: 0;">{{ parking_area.area_name }} - {{ parking_area.address }}</p>
+                </div>
+                <a href="/find_parking" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Find Parking
+                </a>
+            </div>
+        </div>
+
+        <!-- Parking Area Details -->
+        <div class="details-card">
+            <h3 class="section-title"><i class="fas fa-info-circle"></i> Parking Area Information</h3>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Total Slots</div>
+                    <div class="info-value">{{ parking_area.total_slots }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Available Slots</div>
+                    <div class="info-value" style="color: #00ff88;">{{ parking_area.available_slots }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Occupied Slots</div>
+                    <div class="info-value" style="color: #ff5065;">{{ parking_area.occupied_slots }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Occupancy Rate</div>
+                    <div class="info-value">
+                        {% if parking_area.total_slots > 0 %}
+                            {{ ((parking_area.occupied_slots / parking_area.total_slots) * 100)|round(1) }}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Opening Time</div>
+                    <div class="info-value">{{ parking_area.opening_time }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Closing Time</div>
+                    <div class="info-value">{{ parking_area.closing_time }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Parking Type</div>
+                    <div class="info-value">{{ parking_area.parking_type }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Status</div>
+                    <div class="info-value" style="color: #00ff88;">{{ parking_area.status }}</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <div class="info-label">Description</div>
+                <div style="color: #cbd5e1; line-height: 1.6;">{{ parking_area.description }}</div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="/parking_map" class="btn-action btn-info">
+                    <i class="fas fa-map"></i> View on Map
+                </a>
+                {% if parking_area.available_slots > 0 %}
+                <a href="/book_slot" class="btn-action btn-success">
+                    <i class="fas fa-parking"></i> Book Available Slot
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Vehicle Selection -->
+        {% if vehicles %}
+        <div class="details-card">
+            <h3 class="section-title"><i class="fas fa-car"></i> Select Your Vehicle</h3>
+            
+            <div class="vehicle-selection">
+                <label class="form-label" style="color: #94a3b8;">Choose vehicle for booking:</label>
+                <select class="form-select" id="vehicleSelect">
+                    <option value="">-- Select Vehicle --</option>
+                    {% for vehicle in vehicles %}
+                    <option value="{{ vehicle.vehicle_number }}">
+                        {{ vehicle.vehicle_number }} ({{ vehicle.vehicle_type }} - {{ vehicle.color }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        {% else %}
+        <div class="details-card">
+            <div class="text-center py-4">
+                <i class="fas fa-car" style="font-size: 40px; color: #94a3b8; margin-bottom: 15px;"></i>
+                <h4 style="color: #94a3b8;">No Vehicles Registered</h4>
+                <p style="color: #64748b; margin-bottom: 15px;">Please add a vehicle before booking a parking slot.</p>
+                <a href="/add_vehicle" class="btn-action btn-primary">
+                    <i class="fas fa-plus"></i> Add Vehicle
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Parking Slots -->
+        <div class="details-card">
+            <h3 class="section-title"><i class="fas fa-th"></i> Parking Slots</h3>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #00ff88;"></div>
+                    <span>Available</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ff5065;"></div>
+                    <span>Occupied</span>
+                </div>
+            </div>
+
+            {% if slots %}
+            <div class="slots-grid">
+                {% for slot in slots %}
+                <div class="slot-item {% if slot.status == 'Available' %}slot-available{% else %}slot-occupied{% endif %}"
+                     {% if slot.status == 'Available' %}onclick="selectSlot('{{ slot.slot_number }}')"{% endif %}>
+                    <div class="slot-number">{{ slot.slot_number }}</div>
+                    <div class="slot-status {% if slot.status == 'Available' %}status-available{% else %}status-occupied{% endif %}">
+                        {{ slot.status }}
+                    </div>
+                    {% if slot.cctv %}
+                    <div style="font-size: 0.7rem; color: #00ffff; margin-top: 5px;">
+                        <i class="fas fa-video"></i> CCTV
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <p style="color: #64748b;">No parking slots available in this area.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function selectSlot(slotNumber) {
+            const vehicleSelect = document.getElementById('vehicleSelect');
+            const selectedVehicle = vehicleSelect.value;
+            
+            if (!selectedVehicle) {
+                alert('Please select a vehicle first');
+                vehicleSelect.focus();
+                return;
+            }
+            
+            // Redirect to booking with selected slot
+            window.location.href = `/book_slot/${slotNumber}`;
+        }
+
+        // Add some interactivity
+        document.querySelectorAll('.slot-item').forEach(slot => {
+            slot.addEventListener('mouseenter', function() {
+                if (this.classList.contains('slot-available')) {
+                    this.style.background = 'rgba(0, 255, 136, 0.2)';
+                }
+            });
+            
+            slot.addEventListener('mouseleave', function() {
+                if (this.classList.contains('slot-available')) {
+                    this.style.background = 'rgba(0, 255, 136, 0.1)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

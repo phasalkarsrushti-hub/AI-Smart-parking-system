@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Area Management - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .section-title {
+            color: #00ffff;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+        }
+
+        .btn-action {
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-control, .form-select {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: white;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: rgba(0, 255, 255, 0.15);
+            border-color: #00ffff;
+            color: white;
+            box-shadow: 0 0 0 0.2rem rgba(0, 255, 255, 0.25);
+        }
+
+        .form-label {
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .table {
+            color: white;
+        }
+
+        .table thead th {
+            background: rgba(0, 255, 255, 0.1);
+            color: #00ffff;
+            border-color: rgba(0, 255, 255, 0.2);
+        }
+
+        .table tbody td {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .table tbody tr:hover {
+            background: rgba(0, 255, 255, 0.05);
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid #00ff88;
+        }
+
+        .status-inactive {
+            background: rgba(255, 60, 80, 0.2);
+            color: #ff5065;
+            border: 1px solid #ff5065;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(0, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(0, 255, 255, 0.1);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00ffff;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .stats-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .btn-action {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 style="color: #00ffff; font-weight: bold; margin-bottom: 5px;">
+                        <i class="fas fa-building"></i> Parking Area Management
+                    </h1>
+                    <p style="color: #94a3b8; margin: 0;">Manage parking areas and their configurations</p>
+                </div>
+                <div>
+                    <a href="/admin" class="back-btn">
+                        <i class="fas fa-arrow-left"></i> Back to Admin
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-value">{{ parking_areas|length }}</div>
+                <div class="stat-label">Total Parking Areas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">
+                    {{ parking_areas|selectattr('status', 'equalto', 'Active')|list|length }}
+                </div>
+                <div class="stat-label">Active Areas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">
+                    {{ parking_areas|sum(attribute='total_slots') }}
+                </div>
+                <div class="stat-label">Total Slots</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color: #00ff88;">
+                    {{ parking_areas|sum(attribute='available_slots') }}
+                </div>
+                <div class="stat-label">Available Slots</div>
+            </div>
+        </div>
+
+        <!-- Add New Parking Area Form -->
+        <div class="card">
+            <h3 class="section-title">
+                <i class="fas fa-plus-circle"></i> 
+                {% if editing %}Edit Parking Area{% else %}Add New Parking Area{% endif %}
+            </h3>
+            
+            <form method="POST" action="{% if editing %}/admin/edit_parking_area/{{ area.id }}{% else %}/admin/add_parking_area{% endif %}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Parking Name *</label>
+                        <input type="text" class="form-control" name="name" required
+                               value="{% if editing %}{{ area.name }}{% endif %}"
+                               placeholder="e.g., CBT Parking">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Area Name *</label>
+                        <input type="text" class="form-control" name="area_name" required
+                               value="{% if editing %}{{ area.area_name }}{% endif %}"
+                               placeholder="e.g., CBT Area">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Address *</label>
+                        <input type="text" class="form-control" name="address" required
+                               value="{% if editing %}{{ area.address }}{% endif %}"
+                               placeholder="e.g., Central Business Terminal, Belagavi">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">City</label>
+                        <input type="text" class="form-control" name="city"
+                               value="{% if editing %}{{ area.city }}{% else %}Belagavi{% endif %}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">State</label>
+                        <input type="text" class="form-control" name="state"
+                               value="{% if editing %}{{ area.state }}{% else %}Karnataka{% endif %}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Latitude</label>
+                        <input type="number" step="0.0001" class="form-control" name="latitude"
+                               value="{% if editing %}{{ area.latitude }}{% else %}15.8497{% endif %}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Longitude</label>
+                        <input type="number" step="0.0001" class="form-control" name="longitude"
+                               value="{% if editing %}{{ area.longitude }}{% else %}74.4977{% endif %}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Total Slots *</label>
+                        <input type="number" class="form-control" name="total_slots" required
+                               value="{% if editing %}{{ area.total_slots }}{% else %}20{% endif %}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Opening Time</label>
+                        <input type="text" class="form-control" name="opening_time"
+                               value="{% if editing %}{{ area.opening_time }}{% else %}06:00{% endif %}"
+                               placeholder="e.g., 06:00">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Closing Time</label>
+                        <input type="text" class="form-control" name="closing_time"
+                               value="{% if editing %}{{ area.closing_time }}{% else %}22:00{% endif %}"
+                               placeholder="e.g., 22:00">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Parking Type</label>
+                        <select class="form-select" name="parking_type">
+                            <option value="Public" {% if editing and area.parking_type == 'Public' %}selected{% endif %}>Public</option>
+                            <option value="Private" {% if editing and area.parking_type == 'Private' %}selected{% endif %}>Private</option>
+                            <option value="Reserved" {% if editing and area.parking_type == 'Reserved' %}selected{% endif %}>Reserved</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" rows="3"
+                                  placeholder="Describe the parking area...">{% if editing %}{{ area.description }}{% endif %}</textarea>
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn-action btn-success">
+                                <i class="fas fa-save"></i> {% if editing %}Update Parking Area{% else %}Create Parking Area{% endif %}
+                            </button>
+                            {% if editing %}
+                            <a href="/admin/parking_areas" class="btn-action btn-warning">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Existing Parking Areas -->
+        <div class="card">
+            <h3 class="section-title">
+                <i class="fas fa-list"></i> Existing Parking Areas
+            </h3>
+            
+            {% if parking_areas %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Area</th>
+                            <th>Address</th>
+                            <th>Total Slots</th>
+                            <th>Available</th>
+                            <th>Occupied</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for area in parking_areas %}
+                        <tr>
+                            <td>{{ area.id }}</td>
+                            <td><strong>{{ area.name }}</strong></td>
+                            <td>{{ area.area_name }}</td>
+                            <td>{{ area.address }}</td>
+                            <td>{{ area.total_slots }}</td>
+                            <td style="color: #00ff88;">{{ area.available_slots }}</td>
+                            <td style="color: #ff5065;">{{ area.occupied_slots }}</td>
+                            <td>{{ area.parking_type }}</td>
+                            <td>
+                                <span class="status-badge {% if area.status == 'Active' %}status-active{% else %}status-inactive{% endif %}">
+                                    {{ area.status }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a href="/admin/edit_parking_area/{{ area.id }}" class="btn-action btn-primary" style="padding: 5px 10px; font-size: 0.85rem;">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="/admin/delete_parking_area/{{ area.id }}" method="POST" style="display: inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <button type="submit" class="btn-action btn-danger" style="padding: 5px 10px; font-size: 0.85rem;" 
+                                                onclick="return confirm('Are you sure you want to delete this parking area? This will also delete all associated slots.')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-building" style="font-size: 40px; color: #94a3b8; margin-bottom: 15px;"></i>
+                <h4 style="color: #94a3b8;">No Parking Areas Found</h4>
+                <p style="color: #64748b;">Create your first parking area using the form above.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

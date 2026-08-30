@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>🏢 Corporation Dashboard | AI Smart Parking</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family:'Poppins',sans-serif;
+
+    background:#050816;
+
+    color:white;
+
+    overflow-x:hidden;
+
+    min-height:100vh;
+
+}
+
+/* ===================================
+   ANIMATED BACKGROUND
+=================================== */
+
+.background{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100%;
+
+    background:linear-gradient(
+        -45deg,
+        #020617,
+        #071a2d,
+        #0f172a,
+        #001f3f,
+        #020617
+    );
+
+    background-size:400% 400%;
+
+    animation:bgMove 15s ease infinite;
+
+    z-index:-100;
+
+}
+
+@keyframes bgMove{
+
+0%{background-position:0% 50%;}
+
+50%{background-position:100% 50%;}
+
+100%{background-position:0% 50%;}
+
+}
+
+/* ===================================
+   GLOWING CIRCLES
+=================================== */
+
+.circle{
+
+    position:absolute;
+
+    border-radius:50%;
+
+    filter:blur(55px);
+
+    opacity:.35;
+
+    animation:floatCircle 10s infinite alternate;
+
+}
+
+.c1{
+
+    width:300px;
+    height:300px;
+
+    background:#00e5ff;
+
+    top:5%;
+    left:5%;
+
+}
+
+.c2{
+
+    width:240px;
+    height:240px;
+
+    background:#7c4dff;
+
+    top:20%;
+    right:10%;
+
+    animation-delay:3s;
+
+}
+
+.c3{
+
+    width:260px;
+    height:260px;
+
+    background:#00ff99;
+
+    bottom:5%;
+    left:40%;
+
+    animation-delay:6s;
+
+}
+
+@keyframes floatCircle{
+
+from{
+
+transform:translate(0,0);
+
+}
+
+to{
+
+transform:translate(80px,-70px);
+
+}
+
+}
+
+/* ===================================
+   FLOATING PARTICLES
+=================================== */
+
+.particle{
+
+    position:fixed;
+
+    width:8px;
+    height:8px;
+
+    background:white;
+
+    border-radius:50%;
+
+    opacity:.7;
+
+    animation:particleMove 12s linear infinite;
+
+    z-index:-2;
+
+}
+
+.p1{left:10%;animation-delay:0s;}
+.p2{left:30%;animation-delay:2s;}
+.p3{left:50%;animation-delay:4s;}
+.p4{left:70%;animation-delay:6s;}
+.p5{left:90%;animation-delay:8s;}
+
+@keyframes particleMove{
+
+0%{
+
+transform:translateY(100vh);
+
+opacity:0;
+
+}
+
+20%{
+
+opacity:1;
+
+}
+
+100%{
+
+transform:translateY(-120vh);
+
+opacity:0;
+
+}
+
+}
+
+/* ===================================
+   MOVING CARS
+=================================== */
+
+.car{
+
+    position:fixed;
+
+    bottom:20px;
+
+    font-size:50px;
+
+    animation:moveCar 16s linear infinite;
+
+    z-index:-1;
+
+}
+
+.car2{
+
+    bottom:90px;
+
+    font-size:42px;
+
+    animation-delay:5s;
+
+    animation-duration:20s;
+
+}
+
+.car3{
+
+    bottom:155px;
+
+    font-size:46px;
+
+    animation-delay:9s;
+
+    animation-duration:22s;
+
+}
+
+@keyframes moveCar{
+
+from{
+
+left:-150px;
+
+}
+
+to{
+
+left:110%;
+
+}
+
+}
+
+/* ===================================
+   MAIN CONTAINER
+=================================== */
+
+.container{
+
+    margin-top:40px;
+
+    margin-bottom:40px;
+
+}
+
+.main-card{
+
+    background:rgba(255,255,255,.10);
+
+    backdrop-filter:blur(20px);
+
+    border-radius:25px;
+
+    border:1px solid rgba(255,255,255,.15);
+
+    box-shadow:0 0 30px rgba(0,255,255,.4);
+
+    padding:35px;
+
+}
+
+.title{
+
+    text-align:center;
+
+    font-size:38px;
+
+    font-weight:bold;
+
+    color:#00ffff;
+
+    text-shadow:
+    0 0 15px cyan,
+    0 0 35px cyan;
+
+}
+
+.subtitle{
+
+    text-align:center;
+
+    color:#ddd;
+
+    margin-top:10px;
+
+    margin-bottom:25px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- Animated Background -->
+
+<div class="background">
+
+<div class="circle c1"></div>
+
+<div class="circle c2"></div>
+
+<div class="circle c3"></div>
+
+</div>
+
+<!-- Floating Particles -->
+
+<div class="particle p1"></div>
+<div class="particle p2"></div>
+<div class="particle p3"></div>
+<div class="particle p4"></div>
+<div class="particle p5"></div>
+
+<!-- Moving Cars -->
+
+<div class="car">🚗</div>
+<div class="car car2">🚙</div>
+<div class="car car3">🚕</div>
+
+<div class="container">
+
+<div class="main-card">
+
+<h1 class="title">
+🏢 Corporation Parking Dashboard
+</h1>
+
+<p class="subtitle">
+Manage all parking booking requests and approve vehicles for entry.
+</p>
+
+<hr class="text-light">
+{% if requests %}
+
+<div class="table-responsive">
+
+<table class="table table-bordered table-hover align-middle text-center">
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+
+<th>👤 Owner</th>
+
+<th>🚗 Vehicle Number</th>
+
+<th>🅿 Slot</th>
+
+<th>🏢 Parking Area</th>
+
+<th>📩 Message</th>
+
+<th>📅 Date & Time</th>
+
+<th>📌 Status</th>
+
+<th>⚙ Action</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for req in requests %}
+
+<tr>
+
+<td>{{ req.id }}</td>
+
+<td>{{ req.owner }}</td>
+
+<td>
+<span class="badge bg-info text-dark p-2">
+{{ req.vehicle_number }}
+</span>
+</td>
+
+<td>
+
+<span class="badge bg-primary p-2">
+
+{{ req.slot_number }}
+
+</span>
+
+</td>
+
+<td style="min-width:250px;">
+
+{{ req.message }}
+
+</td>
+
+<td>
+
+{{ req.created_at.strftime("%d-%m-%Y %I:%M %p") }}
+
+</td>
+
+<td>
+
+{% if req.status=="Pending" %}
+
+<span class="badge bg-warning text-dark p-2">
+
+⏳ Pending
+
+</span>
+
+{% elif req.status=="Approved" %}
+
+<span class="badge bg-success p-2">
+
+✅ Approved
+
+</span>
+
+{% else %}
+
+<span class="badge bg-danger p-2">
+
+❌ Rejected
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{% if req.status=="Pending" %}
+
+<form action="{{ url_for('approve', id=req.id) }}" method="POST" style="display:inline;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <button type="submit" class="btn btn-success btn-sm me-1">
+        ✔ Approve
+    </button>
+</form>
+
+<form action="{{ url_for('reject', id=req.id) }}" method="POST" style="display:inline;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <button type="submit" class="btn btn-danger btn-sm">
+        ✖ Reject
+    </button>
+</form>
+
+{% elif req.status=="Approved" %}
+
+<span class="badge bg-success">
+
+Vehicle Allowed
+
+</span>
+
+{% else %}
+
+<span class="badge bg-danger">
+
+Rejected
+
+</span>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% else %}
+
+<div class="alert alert-info text-center shadow-lg rounded-4">
+
+<h3>📭 No Booking Requests</h3>
+
+<p>
+
+No parking requests have been received yet.
+
+</p>
+
+</div>
+
+{% endif %}
+
+<hr class="text-light">
+<!-- =========================================
+     DASHBOARD STATISTICS
+========================================= -->
+
+<div class="row mt-5">
+
+<div class="col-md-4 mb-4">
+
+<div class="stats-card pending-card">
+
+<h2>⏳</h2>
+
+<h3>{{ requests|selectattr("status","equalto","Pending")|list|length }}</h3>
+
+<h5>Pending Requests</h5>
+
+</div>
+
+</div>
+
+<div class="col-md-4 mb-4">
+
+<div class="stats-card approved-card">
+
+<h2>✅</h2>
+
+<h3>{{ requests|selectattr("status","equalto","Approved")|list|length }}</h3>
+
+<h5>Approved Requests</h5>
+
+</div>
+
+</div>
+
+<div class="col-md-4 mb-4">
+
+<div class="stats-card rejected-card">
+
+<h2>❌</h2>
+
+<h3>{{ requests|selectattr("status","equalto","Rejected")|list|length }}</h3>
+
+<h5>Rejected Requests</h5>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- =========================================
+     ACTION BUTTONS
+========================================= -->
+
+<div class="text-center mt-5">
+
+<a href="{{ url_for('dashboard') }}"
+class="btn btn-primary btn-lg action-btn">
+
+🏠 User Dashboard
+
+</a>
+
+<button
+onclick="location.reload()"
+class="btn btn-info btn-lg action-btn">
+
+🔄 Refresh Dashboard
+
+</button>
+
+</div>
+
+<hr class="text-light mt-5">
+
+<!-- =========================================
+     FOOTER
+========================================= -->
+
+<div class="text-center footer">
+
+<h4 class="text-info">
+
+🚗 AI Smart Parking Management System
+
+</h4>
+
+<p>
+
+Corporation Approval Panel
+
+</p>
+
+<p>
+
+Python • Flask • SQLite • AI
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<style>
+
+/* =========================================
+   STATISTICS CARDS
+========================================= */
+
+.stats-card{
+
+background:rgba(255,255,255,.10);
+
+backdrop-filter:blur(15px);
+
+padding:25px;
+
+border-radius:20px;
+
+text-align:center;
+
+box-shadow:0 0 20px rgba(0,255,255,.35);
+
+transition:.4s;
+
+animation:floatCard 4s ease-in-out infinite;
+
+}
+
+.stats-card:hover{
+
+transform:translateY(-8px) scale(1.03);
+
+box-shadow:0 0 30px cyan;
+
+}
+
+.pending-card{
+
+border-left:5px solid orange;
+
+}
+
+.approved-card{
+
+border-left:5px solid lime;
+
+}
+
+.rejected-card{
+
+border-left:5px solid red;
+
+}
+
+.stats-card h2{
+
+font-size:50px;
+
+margin-bottom:10px;
+
+}
+
+.stats-card h3{
+
+font-size:35px;
+
+font-weight:bold;
+
+color:#00ffff;
+
+}
+
+/* =========================================
+   ACTION BUTTONS
+========================================= */
+
+.action-btn{
+
+margin:10px;
+
+padding:12px 30px;
+
+border-radius:30px;
+
+font-weight:bold;
+
+transition:.4s;
+
+}
+
+.action-btn:hover{
+
+transform:translateY(-5px);
+
+box-shadow:0 0 20px cyan;
+
+}
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.footer{
+
+color:#ddd;
+
+padding-bottom:30px;
+
+}
+
+/* =========================================
+   FLOATING CARD ANIMATION
+========================================= */
+
+@keyframes floatCard{
+
+0%{
+
+transform:translateY(0);
+
+}
+
+50%{
+
+transform:translateY(-6px);
+
+}
+
+100%{
+
+transform:translateY(0);
+
+}
+
+}
+
+</style>
+<!-- =========================================
+     SECURITY SHIELD
+========================================= -->
+
+<div class="security-shield">
+
+    🛡️
+
+</div>
+
+
+<!-- =========================================
+     RADAR EFFECT
+========================================= -->
+
+<div class="radar radar1"></div>
+
+<div class="radar radar2"></div>
+
+<div class="radar radar3"></div>
+
+
+<style>
+
+/* =========================================
+   SECURITY SHIELD
+========================================= */
+
+.security-shield{
+
+    position:fixed;
+
+    top:25px;
+
+    right:30px;
+
+    font-size:60px;
+
+    z-index:20;
+
+    animation:shieldPulse 2.5s infinite;
+
+}
+
+@keyframes shieldPulse{
+
+    0%{
+
+        transform:scale(1);
+
+        filter:drop-shadow(0 0 8px cyan);
+
+    }
+
+    50%{
+
+        transform:scale(1.15);
+
+        filter:drop-shadow(0 0 30px cyan);
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+        filter:drop-shadow(0 0 8px cyan);
+
+    }
+
+}
+
+
+/* =========================================
+   RADAR ANIMATION
+========================================= */
+
+.radar{
+
+    position:fixed;
+
+    top:80px;
+
+    right:55px;
+
+    border:2px solid rgba(0,255,255,.5);
+
+    border-radius:50%;
+
+    pointer-events:none;
+
+    z-index:5;
+
+    animation:radarWave 3s linear infinite;
+
+}
+
+.radar1{
+
+    width:70px;
+
+    height:70px;
+
+}
+
+.radar2{
+
+    width:120px;
+
+    height:120px;
+
+    animation-delay:1s;
+
+}
+
+.radar3{
+
+    width:170px;
+
+    height:170px;
+
+    animation-delay:2s;
+
+}
+
+@keyframes radarWave{
+
+    0%{
+
+        transform:scale(.4);
+
+        opacity:1;
+
+    }
+
+    100%{
+
+        transform:scale(1.4);
+
+        opacity:0;
+
+    }
+
+}
+
+
+/* =========================================
+   TABLE ANIMATION
+========================================= */
+
+.table tbody tr{
+
+    transition:all .4s ease;
+
+}
+
+.table tbody tr:hover{
+
+    transform:scale(1.01);
+
+    background:rgba(0,255,255,.12);
+
+    box-shadow:0 0 15px rgba(0,255,255,.25);
+
+}
+
+
+/* =========================================
+   TABLE HEADER
+========================================= */
+
+.table thead th{
+
+    font-weight:bold;
+
+    padding:15px;
+
+    white-space:nowrap;
+
+}
+
+
+/* =========================================
+   TABLE CELLS
+========================================= */
+
+.table tbody td{
+
+    padding:14px;
+
+    vertical-align:middle;
+
+}
+
+
+/* =========================================
+   BUTTON ANIMATION
+========================================= */
+
+.btn{
+
+    transition:all .3s ease;
+
+}
+
+.btn:hover{
+
+    transform:translateY(-3px);
+
+}
+
+
+/* =========================================
+   SCROLLBAR
+========================================= */
+
+::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#020617;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#00ffff;
+
+    border-radius:20px;
+
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:#00bcd4;
+
+}
+
+
+/* =========================================
+   RESPONSIVE DESIGN
+========================================= */
+
+@media(max-width:992px){
+
+    .main-card{
+
+        padding:25px;
+
+    }
+
+    .title{
+
+        font-size:32px;
+
+    }
+
+    .security-shield{
+
+        font-size:50px;
+
+        top:20px;
+
+        right:20px;
+
+    }
+
+}
+
+
+@media(max-width:768px){
+
+    .container{
+
+        margin-top:20px;
+
+    }
+
+    .main-card{
+
+        padding:20px;
+
+        border-radius:20px;
+
+    }
+
+    .title{
+
+        font-size:27px;
+
+    }
+
+    .subtitle{
+
+        font-size:14px;
+
+    }
+
+    .security-shield{
+
+        font-size:40px;
+
+        top:15px;
+
+        right:15px;
+
+    }
+
+    .radar{
+
+        display:none;
+
+    }
+
+    .car{
+
+        font-size:35px;
+
+    }
+
+}
+
+
+@media(max-width:576px){
+
+    .title{
+
+        font-size:23px;
+
+    }
+
+    .main-card{
+
+        padding:15px;
+
+    }
+
+    .stats-card{
+
+        padding:18px;
+
+    }
+
+    .stats-card h2{
+
+        font-size:40px;
+
+    }
+
+    .stats-card h3{
+
+        font-size:28px;
+
+    }
+
+    .action-btn{
+
+        width:100%;
+
+        margin:7px 0;
+
+    }
+
+}
+
+
+/* =========================================
+   PAGE ENTRY ANIMATION
+========================================= */
+
+.main-card{
+
+    animation:pageEntry 1s ease;
+
+}
+
+@keyframes pageEntry{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(30px) scale(.98);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0) scale(1);
+
+    }
+
+}
+
+
+/* =========================================
+   TITLE GLOW ANIMATION
+========================================= */
+
+.title{
+
+    animation:titleGlow 2s ease-in-out infinite alternate;
+
+}
+
+@keyframes titleGlow{
+
+    from{
+
+        text-shadow:
+        0 0 10px cyan;
+
+    }
+
+    to{
+
+        text-shadow:
+        0 0 20px cyan,
+        0 0 40px cyan;
+
+    }
+
+}
+
+</style>
+
+
+<!-- =========================================
+     AUTO REFRESH INDICATOR
+========================================= -->
+
+<script>
+
+let refreshSeconds = 30;
+
+setInterval(function(){
+
+    refreshSeconds--;
+
+    if(refreshSeconds <= 0){
+
+        location.reload();
+
+    }
+
+},1000);
+
+</script>
+
+
+<!-- =========================================
+     CLOSE BODY AND HTML
+========================================= -->
+
+</body>
+
+</html>

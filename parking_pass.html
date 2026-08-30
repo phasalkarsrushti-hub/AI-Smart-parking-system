@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Parking Pass - AI Smart Parking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .pass-container {
+            max-width: 480px;
+            width: 100%;
+        }
+
+        .parking-pass {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pass-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 255, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .pass-header {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pass-logo {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: #00ffff;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        .pass-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            margin-bottom: 5px;
+        }
+
+        .pass-subtitle {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .booking-id {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #00ffff;
+            display: inline-block;
+            margin-top: 10px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .pass-details {
+            background: rgba(0, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .detail-value {
+            color: #00ffff;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        .status-approved {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid #00ff88;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .qr-section {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .qr-placeholder {
+            width: 150px;
+            height: 150px;
+            background: white;
+            border-radius: 10px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0f172a;
+            font-size: 0.9rem;
+            border: 3px solid #00ffff;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .pass-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #64748b;
+            font-size: 0.8rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .parking-pass {
+                padding: 20px;
+            }
+
+            .pass-logo {
+                font-size: 2.5rem;
+            }
+
+            .pass-title {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="pass-container">
+        <div style="text-align: center;">
+            <a href="/dashboard" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <div class="parking-pass">
+            <div class="pass-header">
+                <div class="pass-logo">
+                    <i class="fas fa-parking"></i>
+                </div>
+                <div class="pass-title">SMART PARKING PASS</div>
+                <div class="pass-subtitle">AI-Based Parking Management System</div>
+                <div class="booking-id">{{ booking_id }}</div>
+            </div>
+
+            <div class="status-approved">
+                <i class="fas fa-check-circle"></i> APPROVED
+            </div>
+
+            <div class="pass-details">
+                <div class="detail-row">
+                    <span class="detail-label">Owner</span>
+                    <span class="detail-value">{{ username }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Vehicle Number</span>
+                    <span class="detail-value">{{ request_data.vehicle_number }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Parking Slot</span>
+                    <span class="detail-value">{{ request_data.slot_number }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Request Date</span>
+                    <span class="detail-value">{{ request_data.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Status</span>
+                    <span class="detail-value" style="color: #00ff88;">{{ request_data.status }}</span>
+                </div>
+            </div>
+
+            <div class="qr-section">
+                <div class="qr-placeholder">
+                    <i class="fas fa-qrcode" style="font-size: 3rem; color: #0f172a;"></i>
+                </div>
+                <p style="color: #94a3b8; margin-top: 10px; font-size: 0.85rem;">
+                    Scan QR code for vehicle entry
+                </p>
+            </div>
+
+            <div class="action-buttons">
+                <a href="/generate_qr/{{ slot.id }}" class="btn-action btn-primary">
+                    <i class="fas fa-qrcode"></i> Generate QR
+                </a>
+                <a href="/entry/{{ slot.id }}" class="btn-action btn-success">
+                    <i class="fas fa-car"></i> Vehicle Entry
+                </a>
+            </div>
+
+            <div class="pass-footer">
+                <p>Generated by AI Smart Parking Management System</p>
+                <p>Valid until vehicle exit</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
