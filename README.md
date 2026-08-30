@@ -1,4 +1,5 @@
 AI-Based Smart Parking Management System
+
 Project Overview
 The AI-Based Smart Parking Management System is a smart web-based application designed to make parking management easier, faster, and more efficient.
 
@@ -28,6 +29,7 @@ AI-Based Parking Management
 Number Plate Recognition
 Notifications
 Smart Parking Assistance
+
 Tech Stack
 Frontend
 HTML
@@ -40,14 +42,12 @@ Flask
 Database
 SQLite
 AI/ML
-YOLO
-EasyOCR
-IoT
-IoT Sensors
 Tools
 Visual Studio Code
 GitHub
+
 Project Architecture
+
 AI-Smart-Parking-Management-System/
 │
 ├── app.py
@@ -69,6 +69,20 @@ AI-Smart-Parking-Management-System/
 │
 └── database/
     └── parking.db
-About
-AI-Based Smart Parking Management System using Python and Flask
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
